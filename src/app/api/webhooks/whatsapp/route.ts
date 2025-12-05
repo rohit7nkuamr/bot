@@ -1,69 +1,155 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { verifyWebhookToken, parseWhatsAppWebhook, sendWhatsAppMessage } from '@/lib/whatsapp';
+import { parseLeadData, generateQualificationResponse } from '@/lib/gpt';
+import { createLead, updateLeadParsedData } from '@/lib/leads';
+import { supabaseServer } from '@/lib/supabase';
 
 /**
- * WhatsApp Webhook Handler
- * Receives messages from Meta Cloud API and processes them
+ * WhatsApp Webhook Routes
+ * GET: Verify webhook token
+ * POST: Handle incoming messages
  */
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const mode = searchParams.get('hub.mode');
-  const token = searchParams.get('hub.verify_token');
-  const challenge = searchParams.get('hub.challenge');
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const token = searchParams.get('hub.verify_token');
+    const challenge = searchParams.get('hub.challenge');
+    const verifyToken = process.env.META_WEBHOOK_VERIFY_TOKEN;
 
-  // Verify webhook token
-  if (mode === 'subscribe' && token === process.env.META_WEBHOOK_VERIFY_TOKEN) {
-    console.log('✓ Webhook verified');
-    return new NextResponse(challenge, { status: 200 });
+    if (!verifyToken) {
+      return NextResponse.json(
+        { error: 'Webhook verify token not configured' },
+        { status: 500 }
+      );
+    }
+
+    const result = verifyWebhookToken(token || '', challenge || '', verifyToken);
+
+    if (result) {
+      return new Response(result);
+    }
+
+    return NextResponse.json(
+      { error: 'Invalid token' },
+      { status: 403 }
+    );
+  } catch (error) {
+    console.error('Webhook verification error:', error);
+    return NextResponse.json(
+      { error: 'Verification failed' },
+      { status: 500 }
+    );
   }
-
-  return new NextResponse('Unauthorized', { status: 403 });
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Handle incoming WhatsApp messages
-    if (body.object === 'whatsapp_business_account') {
-      const entries = body.entry || [];
-
-      for (const entry of entries) {
-        const changes = entry.changes || [];
-
-        for (const change of changes) {
-          if (change.field === 'messages') {
-            const messages = change.value.messages || [];
-
-            for (const message of messages) {
-              await handleIncomingMessage(message);
-            }
-          }
-        }
-      }
+    // Parse incoming message
+    const parsedMessage = parseWhatsAppWebhook(body);
+    if (!parsedMessage) {
+      return NextResponse.json(
+        { success: true, message: 'No message to process' },
+        { status: 200 }
+      );
     }
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    const { phoneNumber, text, contactName } = parsedMessage;
+
+    // Get or create lead
+    const { data: existingLead } = await supabaseServer
+      .from('leads')
+      .select('*')
+      .eq('phone', phoneNumber)
+      .single();
+
+    let lead = existingLead;
+
+    if (!lead) {
+      // Create new lead
+      // Find user who owns this phone (for now, use a default or system user)
+      const { data: users } = await supabaseServer
+        .from('users')
+        .select('id')
+        .limit(1);
+
+      if (!users || users.length === 0) {
+        console.error('No users found');
+        return NextResponse.json(
+          { success: true, message: 'No users found' },
+          { status: 200 }
+        );
+      }
+
+      const userId = users[0].id;
+
+      // Parse lead data using GPT
+      const parsedData = await parseLeadData(text || 'Inquiry from WhatsApp');
+
+      // Create lead in database
+      const { data: newLead } = await supabaseServer
+        .from('leads')
+        .insert({
+          user_id: userId,
+          phone: phoneNumber,
+          name: contactName || parsedData.name,
+          raw_data: { message: text },
+          parsed_data: parsedData,
+          status: 'pending',
+          budget: parsedData.budget,
+        })
+        .select()
+        .single();
+
+      lead = newLead;
+    }
+
+    // Generate response using GPT
+    const response = await generateQualificationResponse(
+      lead?.name || contactName || 'Lead',
+      lead?.parsed_data?.requirements || 'Unknown',
+      []
+    );
+
+    // Send response via WhatsApp
+    await sendWhatsAppMessage(phoneNumber, response);
+
+    // Store conversation
+    if (lead?.id) {
+      await supabaseServer.from('conversations').insert({
+        lead_id: lead.id,
+        messages: [
+          {
+            role: 'user',
+            content: text,
+            timestamp: new Date().toISOString(),
+          },
+          {
+            role: 'assistant',
+            content: response,
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      });
+    }
+
+    console.log('Webhook processed successfully:', {
+      phone: phoneNumber,
+      name: contactName,
+      message: text,
+    });
+
+    return NextResponse.json(
+      { success: true, message: 'Webhook processed' },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Webhook error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Webhook processing failed' },
       { status: 500 }
     );
   }
-}
-
-async function handleIncomingMessage(message: any) {
-  const phoneNumber = message.from;
-  const messageId = message.id;
-  const timestamp = message.timestamp;
-
-  console.log(`📱 Message from ${phoneNumber}: ${JSON.stringify(message)}`);
-
-  // TODO: Implement message processing logic
-  // 1. Extract lead information
-  // 2. Store in Supabase
-  // 3. Send qualification questions
-  // 4. Process responses with GPT-4o-mini
-  // 5. Forward qualified leads to business owner
 }
