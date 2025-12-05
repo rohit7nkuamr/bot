@@ -7,9 +7,11 @@ import { Menu, X, MessageCircle } from 'lucide-react';
 interface NavbarProps {
   currentPage: string;
   setCurrentPage: (page: string) => void;
+  isAuthenticated?: boolean;
+  onAuthClick?: () => void;
 }
 
-export default function Navbar({ currentPage, setCurrentPage }: NavbarProps) {
+export default function Navbar({ currentPage, setCurrentPage, isAuthenticated, onAuthClick }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
