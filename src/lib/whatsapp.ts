@@ -1,11 +1,14 @@
-import axios from 'axios';
+import twilio from 'twilio';
 
-const WHATSAPP_API_URL = 'https://graph.instagram.com/v18.0';
-const BUSINESS_ACCOUNT_ID = process.env.NEXT_PUBLIC_META_BUSINESS_ACCOUNT_ID;
-const WHATSAPP_API_TOKEN = process.env.META_WHATSAPP_API_TOKEN;
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER;
+
+// Initialize Twilio client
+const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
 /**
- * Send a WhatsApp message
+ * Send a WhatsApp message via Twilio
  */
 export async function sendWhatsAppMessage(
   phoneNumber: string,
@@ -13,43 +16,26 @@ export async function sendWhatsAppMessage(
   messageType: 'text' | 'template' = 'text'
 ) {
   try {
-    if (!BUSINESS_ACCOUNT_ID || !WHATSAPP_API_TOKEN) {
-      throw new Error('Missing WhatsApp API credentials');
+    if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_WHATSAPP_NUMBER) {
+      throw new Error('Missing Twilio WhatsApp credentials');
     }
 
-    const url = `${WHATSAPP_API_URL}/${BUSINESS_ACCOUNT_ID}/messages`;
+    // Format phone number with country code if needed
+    const formattedPhone = phoneNumber.startsWith('+') 
+      ? phoneNumber 
+      : `+91${phoneNumber}`;
 
-    const payload =
-      messageType === 'template'
-        ? {
-            messaging_product: 'whatsapp',
-            to: phoneNumber,
-            type: 'template',
-            template: {
-              name: 'lead_qualification',
-              language: {
-                code: 'en_US',
-              },
-            },
-          }
-        : {
-            messaging_product: 'whatsapp',
-            recipient_type: 'individual',
-            to: phoneNumber,
-            type: 'text',
-            text: {
-              body: message,
-            },
-          };
-
-    const response = await axios.post(url, payload, {
-      headers: {
-        Authorization: `Bearer ${WHATSAPP_API_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
+    const response = await twilioClient.messages.create({
+      from: `whatsapp:${TWILIO_WHATSAPP_NUMBER}`,
+      to: `whatsapp:${formattedPhone}`,
+      body: message,
     });
 
-    return response.data;
+    return {
+      sid: response.sid,
+      status: response.status,
+      to: response.to,
+    };
   } catch (error) {
     console.error('WhatsApp send error:', error);
     throw error;

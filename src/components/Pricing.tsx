@@ -11,22 +11,23 @@ export default function Pricing({ setCurrentPage }: PricingProps) {
   const plans = [
     {
       name: 'Starter',
-      price: '₹999',
+      price: '₹2,499',
       period: '/month',
       description: 'Perfect for small businesses',
       features: [
         'Up to 100 leads/month',
-        'Basic AI qualification',
+        'AI-powered qualification',
         'WhatsApp integration',
         'Email support',
         'Basic analytics',
+        '14-day free trial',
       ],
       cta: 'Start Free Trial',
       highlighted: false,
     },
     {
       name: 'Professional',
-      price: '₹4,999',
+      price: '₹9,999',
       period: '/month',
       description: 'For growing businesses',
       features: [
@@ -37,14 +38,15 @@ export default function Pricing({ setCurrentPage }: PricingProps) {
         'Advanced analytics',
         'Custom workflows',
         'Team collaboration',
+        '14-day free trial',
       ],
       cta: 'Start Free Trial',
       highlighted: true,
     },
     {
       name: 'Enterprise',
-      price: 'Custom',
-      period: 'pricing',
+      price: '₹24,999',
+      period: '/month',
       description: 'For large organizations',
       features: [
         'Unlimited leads',
