@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getUserLeads, createLead, getLeadStats } from '@/lib/leads';
+import { getCurrentSession } from '@/lib/auth';
 
 /**
  * Leads API Routes
@@ -8,28 +10,42 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Implement authentication middleware
-    // const userId = await verifyAuth(request);
+    // Get current user session
+    const session = await getCurrentSession();
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
 
-    // TODO: Fetch leads from Supabase
-    // const { data: leads, error } = await supabase
-    //   .from('leads')
-    //   .select('*')
-    //   .eq('user_id', userId)
-    //   .order('created_at', { ascending: false });
+    const userId = session.user.id;
 
-    const leads = [
+    // Get query params
+    const searchParams = request.nextUrl.searchParams;
+    const status = searchParams.get('status');
+
+    let leads;
+    if (status) {
+      // Get leads by status
+      const { getLeadsByStatus } = await import('@/lib/leads');
+      leads = await getLeadsByStatus(userId, status as any);
+    } else {
+      // Get all leads
+      leads = await getUserLeads(userId);
+    }
+
+    // Get stats
+    const stats = await getLeadStats(userId);
+
+    return NextResponse.json(
       {
-        id: '1',
-        name: 'Rajesh Kumar',
-        phone: '+91 98765 43210',
-        status: 'qualified',
-        budget: 50000,
-        created_at: new Date().toISOString(),
+        success: true,
+        data: leads,
+        stats,
       },
-    ];
-
-    return NextResponse.json({ success: true, data: leads }, { status: 200 });
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Error fetching leads:', error);
     return NextResponse.json(
@@ -41,20 +57,40 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { phone, name, budget } = body;
+    // Get current user session
+    const session = await getCurrentSession();
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
 
-    // TODO: Implement authentication
-    // TODO: Validate input
-    // TODO: Check lead limit for subscription plan
-    // TODO: Store in Supabase
-    // TODO: Send WhatsApp qualification message
+    const userId = session.user.id;
+    const body = await request.json();
+    const { phone, name, budget, raw_data } = body;
+
+    // Validate input
+    if (!phone || !name) {
+      return NextResponse.json(
+        { error: 'Phone and name are required' },
+        { status: 400 }
+      );
+    }
+
+    // Create lead
+    const lead = await createLead(userId, {
+      phone,
+      name,
+      budget,
+      raw_data,
+    });
 
     return NextResponse.json(
       {
         success: true,
         message: 'Lead created successfully',
-        data: { phone, name, budget },
+        data: lead,
       },
       { status: 201 }
     );

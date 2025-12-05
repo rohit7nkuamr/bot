@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { signUp, signIn, signOut, getCurrentUser } from '@/lib/auth';
 
 /**
  * Authentication Routes
- * POST: Handle signup, login, logout
+ * POST: Handle signup, login, logout, get-user
  */
 
 export async function POST(request: NextRequest) {
@@ -11,43 +12,44 @@ export async function POST(request: NextRequest) {
     const { action, email, password } = body;
 
     if (action === 'signup') {
-      // TODO: Implement signup with Supabase Auth
-      // const { data, error } = await supabase.auth.signUp({
-      //   email,
-      //   password,
-      // });
-
+      const result = await signUp(email, password);
       return NextResponse.json(
         {
           success: true,
           message: 'Signup successful',
-          data: { email },
+          data: result.user,
         },
         { status: 201 }
       );
     }
 
     if (action === 'login') {
-      // TODO: Implement login with Supabase Auth
-      // const { data, error } = await supabase.auth.signInWithPassword({
-      //   email,
-      //   password,
-      // });
-
+      const result = await signIn(email, password);
       return NextResponse.json(
         {
           success: true,
           message: 'Login successful',
-          data: { email },
+          data: result.session,
         },
         { status: 200 }
       );
     }
 
     if (action === 'logout') {
-      // TODO: Implement logout
+      await signOut();
       return NextResponse.json(
         { success: true, message: 'Logout successful' },
+        { status: 200 }
+      );
+    }
+
+    if (action === 'get-user') {
+      const user = await getCurrentUser();
+      return NextResponse.json(
+        {
+          success: true,
+          data: user,
+        },
         { status: 200 }
       );
     }
