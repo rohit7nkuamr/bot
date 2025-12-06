@@ -27,6 +27,14 @@ export interface User {
   indiamart_api_key?: string; // Encrypted
   zoho_api_key?: string;      // Encrypted
   hubspot_api_key?: string;   // Encrypted
+  billing_address?: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    country: string;
+  };
+  gstin?: string;
   created_at: string;
   updated_at: string;
 }

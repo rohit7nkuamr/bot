@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronRight, HelpCircle, X, ExternalLink, Image as ImageIcon } from 'lucide-react';
 import Sidebar from '@/components/dashboard/Sidebar';
+import BillingForm from '@/components/settings/BillingForm';
 
 // Mock Integration Data
 const integrations = [
@@ -139,6 +140,9 @@ export default function SettingsPage() {
                             </motion.div>
                         ))}
                     </div>
+
+                    {/* Billing Form */}
+                    <BillingForm />
 
                     {/* Help / Support */}
                     <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-900/40 to-cyan-900/40 border border-indigo-500/20 text-center">
