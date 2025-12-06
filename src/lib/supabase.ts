@@ -25,6 +25,8 @@ export interface User {
   monthly_lead_limit: number;
   leads_used: number;
   indiamart_api_key?: string; // Encrypted
+  zoho_api_key?: string;      // Encrypted
+  hubspot_api_key?: string;   // Encrypted
   created_at: string;
   updated_at: string;
 }
