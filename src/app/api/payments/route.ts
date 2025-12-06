@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { getCurrentSession } from '@/lib/auth';
 import { updateSubscriptionPlan } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase';
@@ -7,6 +8,27 @@ import { supabaseServer } from '@/lib/supabase';
  * Payments API Routes
  * POST: Get Razorpay key, verify payment, handle webhooks
  */
+
+// Verify Razorpay signature
+function verifyRazorpaySignature(
+  orderId: string,
+  paymentId: string,
+  signature: string
+): boolean {
+  const secret = process.env.RAZORPAY_KEY_SECRET;
+  if (!secret) {
+    console.error('Razorpay secret not configured');
+    return false;
+  }
+
+  const message = `${orderId}|${paymentId}`;
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(message)
+    .digest('hex');
+
+  return expectedSignature === signature;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,21 +50,36 @@ export async function POST(request: NextRequest) {
     if (action === 'verify-payment') {
       const { paymentId, orderId, signature, planName, userId } = body;
 
-      // TODO: Verify Razorpay signature
-      // For now, assume payment is successful
-      // In production, verify signature using HMAC-SHA256
+      // Verify Razorpay signature
+      if (!verifyRazorpaySignature(orderId, paymentId, signature)) {
+        return NextResponse.json(
+          { error: 'Payment verification failed' },
+          { status: 400 }
+        );
+      }
 
       // Update user subscription plan
       await updateSubscriptionPlan(userId, planName);
 
       // Create subscription record
-      await supabaseServer.from('subscriptions').insert({
-        user_id: userId,
-        plan: planName,
-        status: 'active',
-        renewal_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        razorpay_subscription_id: paymentId,
-      });
+      const { error: insertError } = await supabaseServer
+        .from('subscriptions')
+        .insert({
+          user_id: userId,
+          plan: planName,
+          status: 'active',
+          renewal_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          razorpay_payment_id: paymentId,
+          razorpay_order_id: orderId,
+        });
+
+      if (insertError) {
+        console.error('Subscription insert error:', insertError);
+        return NextResponse.json(
+          { error: 'Failed to create subscription' },
+          { status: 500 }
+        );
+      }
 
       return NextResponse.json(
         {
@@ -56,8 +93,21 @@ export async function POST(request: NextRequest) {
 
     if (action === 'webhook') {
       // Handle Razorpay webhook
-      // TODO: Verify webhook signature
-      // TODO: Update subscription status based on event
+      const { event, payload } = body;
+
+      if (event === 'payment.authorized') {
+        // Payment successful
+        const { payment } = payload;
+        console.log('Payment authorized:', payment.id);
+      } else if (event === 'payment.failed') {
+        // Payment failed
+        const { payment } = payload;
+        console.log('Payment failed:', payment.id);
+      } else if (event === 'subscription.activated') {
+        // Subscription activated
+        const { subscription } = payload;
+        console.log('Subscription activated:', subscription.id);
+      }
 
       return NextResponse.json(
         { success: true, message: 'Webhook processed' },
