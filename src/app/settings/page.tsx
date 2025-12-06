@@ -39,6 +39,41 @@ export default function SettingsPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile sidebar state
     const [selectedIntegration, setSelectedIntegration] = useState<typeof integrations[0] | null>(null);
     const [apiKey, setApiKey] = useState('');
+    const [isConnecting, setIsConnecting] = useState(false);
+    const [connectionError, setConnectionError] = useState<string | null>(null);
+
+    const handleConnect = async () => {
+        if (!apiKey || !selectedIntegration) return;
+
+        setIsConnecting(true);
+        setConnectionError(null);
+
+        try {
+            const response = await fetch(`/api/integrations/${selectedIntegration.id}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ apiKey }),
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Connection failed');
+            }
+
+            // On success, close modal and refresh UI (in a real app, you'd update state)
+            alert('Successfully connected!');
+            setSelectedIntegration(null);
+            // Here you would refetch the integrations status to update the UI
+
+        } catch (error) {
+            setConnectionError(error instanceof Error ? error.message : 'An unknown error occurred');
+        } finally {
+            setIsConnecting(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-background flex text-white font-sans overflow-hidden">
@@ -198,9 +233,16 @@ export default function SettingsPage() {
                                     Cancel
                                 </button>
                                 <button
-                                    className="px-6 py-2.5 rounded-xl font-bold bg-white text-black hover:bg-zinc-200 transition-colors shadow-lg shadow-white/5"
+                                    onClick={handleConnect}
+                                    disabled={isConnecting}
+                                    className="px-6 py-2.5 rounded-xl font-bold bg-white text-black hover:bg-zinc-200 transition-colors shadow-lg shadow-white/5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                                 >
-                                    Verify & Connect
+                                    {isConnecting ? (
+                                        <>
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
+                                            Connecting...
+                                        </>
+                                    ) : 'Verify & Connect'}
                                 </button>
                             </div>
 

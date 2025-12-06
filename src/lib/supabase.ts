@@ -24,6 +24,7 @@ export interface User {
   subscription_plan: 'starter' | 'professional' | 'enterprise';
   monthly_lead_limit: number;
   leads_used: number;
+  indiamart_api_key?: string; // Encrypted
   created_at: string;
   updated_at: string;
 }
