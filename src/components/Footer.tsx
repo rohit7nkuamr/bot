@@ -10,19 +10,33 @@ export default function Footer() {
   const footerLinks = [
     {
       title: 'Product',
-      links: ['Features', 'Pricing', 'Security', 'Roadmap'],
+      links: [
+        { name: 'Features', href: '#' },
+        { name: 'Pricing', href: '/#pricing' },
+        { name: 'Security', href: '#' },
+      ],
     },
     {
       title: 'Company',
-      links: ['About', 'Blog', 'Careers', 'Contact'],
+      links: [
+        { name: 'About', href: '#' },
+        { name: 'Blog', href: '#' },
+      ],
     },
     {
       title: 'Resources',
-      links: ['Documentation', 'API Docs', 'Community', 'Support'],
+      links: [
+        { name: 'Documentation', href: '/docs' },
+        { name: 'API Reference', href: '/docs/api-leads' },
+        { name: 'Support', href: 'mailto:support@leadfilter.com' },
+      ],
     },
     {
       title: 'Legal',
-      links: ['Privacy', 'Terms', 'Compliance', 'Cookies'],
+      links: [
+        { name: 'Privacy Policy', href: '#' },
+        { name: 'Terms of Service', href: '#' },
+      ],
     },
   ];
 
@@ -72,13 +86,13 @@ export default function Footer() {
             >
               <h4 className="font-semibold text-white mb-6 text-sm">{section.title}</h4>
               <ul className="space-y-3">
-                {section.links.map((link, i) => (
-                  <li key={i}>
+                {section.links.map((link) => (
+                  <li key={link.name}>
                     <Link
-                      href="#"
+                      href={link.href}
                       className="text-zinc-500 hover:text-cyan-400 transition-colors text-sm"
                     >
-                      {link}
+                      {link.name}
                     </Link>
                   </li>
                 ))}
