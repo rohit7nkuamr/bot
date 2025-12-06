@@ -1,286 +1,249 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { ArrowRight, Zap, Play } from 'lucide-react';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
+import { ArrowRight, Sparkles, Play, Zap, Target, TrendingUp } from 'lucide-react';
+import { useState } from 'react';
 
 interface HeroProps {
   setCurrentPage: (page: string) => void;
 }
 
 export default function Hero({ setCurrentPage }: HeroProps) {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.8 },
-    },
-  };
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <section className="w-full min-h-screen flex items-center justify-center pt-32 px-4 sm:px-6 lg:px-8 overflow-hidden relative">
-      {/* Multiple animated background orbs */}
-      <motion.div
-        animate={{ 
-          scale: [1, 1.3, 1],
-          opacity: [0.2, 0.4, 0.2],
-          x: [0, 50, 0],
-          y: [0, -30, 0]
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl -z-10"
-      />
-      <motion.div
-        animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
-          x: [0, -40, 0],
-          y: [0, 40, 0]
-        }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl -z-10"
-      />
-      <motion.div
-        animate={{ 
-          scale: [1, 1.4, 1],
-          opacity: [0.15, 0.3, 0.15]
-        }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute top-1/2 right-1/3 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl -z-10"
-      />
+    <section className="relative w-full min-h-screen flex items-center justify-center pt-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* DRAMATIC Animated Background with HUGE orbs */}
+      <div className="absolute inset-0 -z-10">
+        {/* Giant cyan orb - VERY VISIBLE */}
+        <motion.div
+          animate={{
+            scale: [1, 1.5, 1],
+            opacity: [0.4, 0.7, 0.4],
+            x: [-100, 100, -100],
+            y: [-50, 50, -50],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-0 left-0 w-[800px] h-[800px] bg-gradient-to-br from-cyan-400/40 to-blue-500/40 rounded-full blur-[120px]"
+        />
+        
+        {/* Giant blue orb */}
+        <motion.div
+          animate={{
+            scale: [1, 1.4, 1],
+            opacity: [0.3, 0.6, 0.3],
+            x: [100, -100, 100],
+            y: [50, -50, 50],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-0 right-0 w-[900px] h-[900px] bg-gradient-to-tl from-blue-500/40 to-indigo-600/40 rounded-full blur-[120px]"
+        />
+        
+        {/* Purple accent orb */}
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.2, 0.5, 0.2],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-full blur-[100px]"
+        />
+      </div>
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="w-full max-w-6xl mx-auto text-center px-0"
-      >
-        {/* Badge */}
-        <motion.div variants={itemVariants} className="mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-500/30 bg-cyan-500/5 backdrop-blur-sm">
-            <Zap className="w-4 h-4 text-cyan-400" />
-            <span className="text-sm text-cyan-300">AI-Powered Lead Qualification</span>
-          </div>
+      {/* Floating particles */}
+      {[...Array(20)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-2 h-2 bg-cyan-400/60 rounded-full"
+          animate={{
+            y: [0, -1000],
+            x: [0, Math.random() * 200 - 100],
+            opacity: [0, 1, 0],
+          }}
+          transition={{
+            duration: Math.random() * 10 + 10,
+            repeat: Infinity,
+            delay: Math.random() * 5,
+          }}
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: '100%',
+          }}
+        />
+      ))}
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto">
+        {/* Badge with glow */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="flex justify-center mb-8"
+        >
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-cyan-400/50 bg-cyan-500/10 backdrop-blur-xl shadow-[0_0_30px_rgba(34,211,238,0.3)]"
+          >
+            <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
+            <span className="text-sm font-semibold bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent">
+              AI-Powered Lead Qualification
+            </span>
+          </motion.div>
         </motion.div>
 
-        {/* Main Heading */}
+        {/* HUGE Heading with dramatic gradient */}
         <motion.h1
-          variants={itemVariants}
-          className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="text-6xl sm:text-7xl lg:text-8xl font-black mb-8 leading-tight text-center"
         >
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500">
+          <span className="block bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(34,211,238,0.5)]">
             Qualify Leads in
           </span>
-          <br />
-          <span className="text-white">Real-Time with AI</span>
+          <span className="block text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+            Real-Time with AI
+          </span>
         </motion.h1>
 
         {/* Subheading */}
         <motion.p
-          variants={itemVariants}
-          className="text-lg sm:text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="text-xl sm:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto text-center leading-relaxed"
         >
-          Stop wasting 2+ hours daily filtering junk leads. Our AI-powered WhatsApp bot automatically qualifies every lead, extracts key information, and sends you only the genuine opportunities.
+          Stop wasting <span className="text-cyan-400 font-bold">2+ hours daily</span> filtering junk leads. 
+          Our AI-powered WhatsApp bot automatically qualifies every lead and sends you only the{' '}
+          <span className="text-emerald-400 font-bold">genuine opportunities</span>.
         </motion.p>
 
-        {/* CTA Buttons */}
+        {/* DRAMATIC CTA Buttons */}
         <motion.div
-          variants={itemVariants}
-          className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="flex flex-col sm:flex-row gap-6 justify-center mb-16"
         >
+          {/* Primary CTA with MASSIVE glow */}
           <motion.button
-            whileHover={{ 
-              scale: 1.05, 
-              boxShadow: '0 0 40px rgba(34, 211, 238, 0.6), 0 0 80px rgba(34, 211, 238, 0.3)',
-              y: -2
-            }}
+            whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setCurrentPage('dashboard')}
-            className="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2 overflow-hidden transition-all"
+            onHoverStart={() => setIsHovered(true)}
+            onHoverEnd={() => setIsHovered(false)}
+            className="group relative px-10 py-5 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3 overflow-hidden shadow-[0_0_50px_rgba(34,211,238,0.6)] hover:shadow-[0_0_80px_rgba(34,211,238,0.8)] transition-all duration-300"
           >
+            {/* Animated gradient overlay */}
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500"
-              initial={{ x: '-100%' }}
-              whileHover={{ x: '100%' }}
-              transition={{ duration: 0.6 }}
+              className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400"
+              animate={{
+                x: isHovered ? ['-100%', '100%'] : '-100%',
+              }}
+              transition={{ duration: 0.8 }}
             />
-            <span className="relative z-10">Get Started</span>
-            <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+            
+            {/* Shine effect */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+              animate={{
+                x: ['-200%', '200%'],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                repeatDelay: 1,
+              }}
+            />
+            
+            <span className="relative z-10 flex items-center gap-3">
+              Get Started Free
+              <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+            </span>
           </motion.button>
+
+          {/* Secondary CTA */}
           <motion.button
-            whileHover={{ 
-              scale: 1.05, 
-              borderColor: 'rgba(34, 211, 238, 0.8)',
-              backgroundColor: 'rgba(34, 211, 238, 0.1)',
-              y: -2
-            }}
+            whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
-            className="group px-8 py-4 border border-cyan-500/30 text-white rounded-lg font-semibold hover:bg-cyan-500/10 transition-all flex items-center justify-center gap-2 relative overflow-hidden"
+            className="group relative px-10 py-5 border-2 border-cyan-400/50 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3 backdrop-blur-xl bg-cyan-500/10 hover:bg-cyan-500/20 hover:border-cyan-400 hover:shadow-[0_0_30px_rgba(34,211,238,0.4)] transition-all duration-300"
           >
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/10 to-cyan-500/0"
-              animate={{ x: ['-100%', '100%'] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            />
-            <Play className="w-4 h-4 relative z-10 group-hover:scale-110 transition-transform" />
-            <span className="relative z-10">See it in Action</span>
+            <Play className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            See it in Action
           </motion.button>
         </motion.div>
 
-        {/* Features Grid */}
+        {/* BOLD Feature Cards with 3D effect */}
         <motion.div
-          variants={itemVariants}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20"
         >
           {[
-            { icon: '⚡', title: 'Instant Analysis', desc: 'Analyze leads in milliseconds' },
-            { icon: '🎯', title: 'Smart Scoring', desc: 'AI-powered qualification scores' },
-            { icon: '📊', title: 'Real-time Dashboard', desc: 'Track all metrics live' },
+            { icon: Zap, title: 'Instant Analysis', desc: 'Qualify leads in milliseconds', color: 'from-yellow-400 to-orange-500' },
+            { icon: Target, title: 'Smart Scoring', desc: 'AI-powered qualification', color: 'from-cyan-400 to-blue-500' },
+            { icon: TrendingUp, title: 'Real-time Dashboard', desc: 'Track all metrics live', color: 'from-emerald-400 to-green-500' },
           ].map((feature, i) => (
             <motion.div
               key={i}
-              whileHover={{ 
-                y: -8, 
-                borderColor: 'rgba(34, 211, 238, 0.6)',
-                boxShadow: '0 20px 40px rgba(34, 211, 238, 0.2)',
-                rotateX: 5,
-                rotateY: 5
+              whileHover={{
+                y: -15,
+                rotateX: 10,
+                rotateY: 10,
+                scale: 1.05,
               }}
-              transition={{ type: "spring", stiffness: 300 }}
-              className="group p-6 rounded-xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 backdrop-blur-sm hover:bg-cyan-500/10 transition-all cursor-pointer"
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="group relative p-8 rounded-3xl border-2 border-cyan-400/30 bg-gradient-to-br from-slate-900/80 to-slate-800/80 backdrop-blur-2xl hover:border-cyan-400/60 hover:shadow-[0_0_50px_rgba(34,211,238,0.3)] transition-all duration-300 cursor-pointer"
               style={{ transformStyle: 'preserve-3d' }}
             >
-              <motion.div 
-                className="text-3xl mb-3"
-                whileHover={{ scale: 1.2, rotate: 10 }}
-                transition={{ type: "spring", stiffness: 400 }}
+              {/* Glow effect */}
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/0 to-blue-500/0 group-hover:from-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-300" />
+              
+              {/* Icon with gradient */}
+              <motion.div
+                whileHover={{ rotate: [0, -10, 10, 0], scale: 1.2 }}
+                transition={{ duration: 0.5 }}
+                className={`relative z-10 w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(34,211,238,0.4)] group-hover:shadow-[0_0_50px_rgba(34,211,238,0.6)] transition-all`}
               >
-                {feature.icon}
+                <feature.icon className="w-8 h-8 text-white" />
               </motion.div>
-              <h3 className="text-white font-semibold mb-2 group-hover:text-cyan-300 transition-colors">{feature.title}</h3>
-              <p className="text-gray-400 text-sm group-hover:text-gray-300 transition-colors">{feature.desc}</p>
+              
+              <h3 className="relative z-10 text-2xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors">
+                {feature.title}
+              </h3>
+              <p className="relative z-10 text-gray-400 group-hover:text-gray-300 transition-colors text-lg">
+                {feature.desc}
+              </p>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* Central Animated Orb with Cards */}
+        {/* Stats with glow */}
         <motion.div
-          variants={itemVariants}
-          className="relative h-80 mt-12 flex items-center justify-center"
-        >
-          {/* Central glowing orb with multiple rings */}
-          <motion.div
-            animate={{ 
-              rotate: 360,
-              boxShadow: [
-                '0 0 40px rgba(34, 211, 238, 0.4), inset 0 0 20px rgba(34, 211, 238, 0.2)',
-                '0 0 80px rgba(34, 211, 238, 0.6), inset 0 0 40px rgba(34, 211, 238, 0.4)',
-                '0 0 40px rgba(34, 211, 238, 0.4), inset 0 0 20px rgba(34, 211, 238, 0.2)',
-              ]
-            }}
-            transition={{ duration: 6, repeat: Infinity }}
-            className="absolute w-48 h-48 rounded-full border-2 border-cyan-400/30 bg-gradient-to-br from-cyan-500/10 to-blue-500/10"
-          />
-          
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 8, repeat: Infinity }}
-            className="absolute w-56 h-56 rounded-full border border-cyan-400/20"
-          />
-          
-          <motion.div
-            animate={{ 
-              rotate: 360,
-              scale: [1, 1.1, 1]
-            }}
-            transition={{ duration: 10, repeat: Infinity }}
-            className="absolute w-64 h-64 rounded-full border border-blue-400/10"
-          />
-
-          {/* Top Left Card */}
-          <motion.div
-            animate={{ y: [0, -15, 0] }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="absolute left-0 top-0 w-64 p-5 rounded-xl border border-cyan-500/30 bg-gradient-to-br from-slate-900 to-slate-800 backdrop-blur-sm"
-          >
-            <div className="text-xs font-semibold text-cyan-400 mb-3">Lead Received</div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
-                <span className="text-sm text-gray-300">Budget: ₹50,000</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
-                <span className="text-sm text-gray-300">Timeline: 2 weeks</span>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Bottom Right Card */}
-          <motion.div
-            animate={{ y: [0, 15, 0] }}
-            transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
-            className="absolute right-0 bottom-0 w-64 p-5 rounded-xl border border-cyan-500/30 bg-gradient-to-br from-slate-900 to-slate-800 backdrop-blur-sm"
-          >
-            <div className="text-xs font-semibold text-emerald-400 mb-3">✓ Qualified</div>
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-gray-300">Quality Score</span>
-                  <span className="text-emerald-400 font-semibold">92%</span>
-                </div>
-                <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                  <motion.div 
-                    animate={{ width: ['0%', '92%'] }}
-                    transition={{ duration: 2 }}
-                    className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400"
-                  />
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Center text */}
-          <div className="text-center z-10">
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400"
-            >
-              AI
-            </motion.div>
-            <p className="text-xs text-gray-400 mt-2">Analyzing</p>
-          </div>
-        </motion.div>
-
-        {/* Stats */}
-        <motion.div
-          variants={itemVariants}
-          className="grid grid-cols-3 gap-4 mt-16 max-w-2xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1 }}
+          className="grid grid-cols-3 gap-8 max-w-4xl mx-auto"
         >
           {[
-            { number: '90%', label: 'Junk Filtered' },
-            { number: '2h+', label: 'Time Saved Daily' },
-            { number: '40%', label: 'More Conversions' },
+            { number: '90%', label: 'Junk Filtered', color: 'from-red-400 to-orange-500' },
+            { number: '2h+', label: 'Time Saved Daily', color: 'from-cyan-400 to-blue-500' },
+            { number: '40%', label: 'More Conversions', color: 'from-emerald-400 to-green-500' },
           ].map((stat, i) => (
-            <div key={i} className="p-4 rounded-lg border border-cyan-500/20 bg-cyan-500/5">
-              <div className="text-2xl font-bold text-cyan-400">{stat.number}</div>
-              <div className="text-xs text-gray-400 mt-1">{stat.label}</div>
-            </div>
+            <motion.div
+              key={i}
+              whileHover={{ scale: 1.1, y: -5 }}
+              className="relative p-6 rounded-2xl border-2 border-cyan-400/30 bg-gradient-to-br from-slate-900/60 to-slate-800/60 backdrop-blur-xl hover:border-cyan-400/60 hover:shadow-[0_0_40px_rgba(34,211,238,0.3)] transition-all duration-300"
+            >
+              <div className={`text-4xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>
+                {stat.number}
+              </div>
+              <div className="text-sm text-gray-400 font-medium">{stat.label}</div>
+            </motion.div>
           ))}
         </motion.div>
-      </motion.div>
+      </div>
     </section>
   );
 }
