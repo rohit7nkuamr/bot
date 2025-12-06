@@ -29,8 +29,8 @@ export default function Pricing({ setCurrentPage }: PricingProps = {}) {
     },
     {
       name: 'Enterprise',
-      price: 'Custom',
-      period: '',
+      price: '₹24,999+',
+      period: '/mo',
       description: 'For large organizations.',
       features: ['Dedicated Instance', 'Custom AI Model Training', 'WhatsApp Green Tick Assist', 'Dedicated Account Manager', 'SLA Guarantee'],
       highlighted: false,
@@ -45,7 +45,7 @@ export default function Pricing({ setCurrentPage }: PricingProps = {}) {
             Simple, Transparent Pricing
           </h2>
           <p className="text-zinc-500 text-lg">
-            Built for Indian Businesses. Start for free.
+            Built for Indian Businesses. Choose your plan.
           </p>
         </div>
 
@@ -93,7 +93,7 @@ export default function Pricing({ setCurrentPage }: PricingProps = {}) {
                   : 'bg-white/10 hover:bg-white/20 text-white'
                   }`}
               >
-                {plan.price === 'Custom' ? 'Contact Sales' : 'Start 14-Day Free Trial'}
+                {plan.name === 'Enterprise' ? 'Contact Sales' : 'Get Started'}
                 {plan.price !== 'Custom' && <ArrowRight className="w-4 h-4" />}
               </Link>
             </motion.div>
