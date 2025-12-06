@@ -28,27 +28,15 @@ export function useDashboardData() {
 
             try {
                 setLoading(true);
-                // Fetch stats and leads in parallel
-                const [statsRes, leadsRes] = await Promise.all([
-                    leadsAPI.getLeads(),
-                    leadsAPI.getLeads()
-                ]);
+                // Fetch dashboard data from a single endpoint
+                const response = await leadsAPI.getLeads();
 
-                // Explicitly check if data is an array to satisfy TS
-                if (leadsRes.success && Array.isArray(leadsRes.data)) {
-                    const allLeads = leadsRes.data as any[];
-                    setLeads(allLeads);
-
-                    // Calculate stats from leads for now
-                    const qualifiedCount = allLeads.filter((l: any) => l.status === 'qualified').length;
-                    const conversion = allLeads.length > 0 ? ((qualifiedCount / allLeads.length) * 100).toFixed(1) + '%' : '0%';
-
-                    setStats({
-                        totalLeads: allLeads.length,
-                        qualified: qualifiedCount,
-                        conversionRate: conversion,
-                        responseTime: '2.4s'
-                    });
+                if (response.success && response.data && response.stats) {
+                    setLeads(response.data as any[]);
+                    setStats(response.stats as DashboardStats);
+                } else {
+                    // Handle cases where data or stats might be missing
+                    throw new Error(response.error || 'Failed to get dashboard data');
                 }
 
             } catch (err) {

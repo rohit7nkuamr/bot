@@ -8,6 +8,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 interface ApiResponse<T> {
   success: boolean;
   data?: T;
+  stats?: any; // To accommodate dashboard stats
   error?: string;
   message?: string;
 }

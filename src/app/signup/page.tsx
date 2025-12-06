@@ -1,23 +1,33 @@
 'use client';
 
 import SignupPage from '@/components/Auth/SignupPage';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Page() {
     const router = useRouter();
+    const { isAuthenticated, loading } = useAuth();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
+            </div>
+        );
+    }
 
     return (
-        <div className="min-h-screen bg-background relative overflow-hidden">
-            {/* Background Effects */}
-            <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] -translate-x-1/2"></div>
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[100px] translate-x-1/2"></div>
-            </div>
-
-            <SignupPage
-                onSuccess={() => router.push('/')}
-                onSwitchToLogin={() => router.push('/login')}
-            />
+        <div className="min-h-screen bg-background flex flex-col">
+            <Navbar isAuthenticated={isAuthenticated} />
+            <main className="flex-grow flex items-center justify-center">
+                <SignupPage
+                    onSuccess={() => router.push('/dashboard')}
+                    onSwitchToLogin={() => router.push('/login')}
+                />
+            </main>
+            <Footer />
         </div>
     );
 }
