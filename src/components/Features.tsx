@@ -57,7 +57,10 @@ export default function Features() {
   };
 
   return (
-    <section className="w-full py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <section className="w-full py-24 px-4 sm:px-6 lg:px-8 overflow-hidden relative">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-blue-900/20 to-slate-900 -z-10" />
+      
       <div className="w-full max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div
@@ -65,15 +68,20 @@ export default function Features() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold mb-4">
-            <span className="gradient-text">Powerful Features</span>
+          <motion.div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-500/30 bg-cyan-500/5 backdrop-blur-sm mb-6">
+            <span className="text-sm text-cyan-300">✨ Powerful Features</span>
+          </motion.div>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500">
+              Everything You Need
+            </span>
             <br />
-            <span className="text-white">Built for Your Success</span>
+            <span className="text-white">to Qualify Leads Automatically</span>
           </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Everything you need to automate lead qualification and focus on closing deals.
+          <p className="text-gray-300 text-lg max-w-3xl mx-auto">
+            Powerful AI-driven tools designed to save you time, reduce costs, and increase conversion rates.
           </p>
         </motion.div>
 
@@ -83,7 +91,7 @@ export default function Features() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           {features.map((feature, index) => {
             const Icon = feature.icon;
@@ -91,14 +99,22 @@ export default function Features() {
               <motion.div
                 key={index}
                 variants={itemVariants}
-                whileHover={{ y: -5 }}
-                className="glass rounded-2xl p-8 border border-white/10 hover:border-indigo-500/50 transition-all group"
+                whileHover={{ y: -8, borderColor: 'rgba(34, 211, 238, 0.6)' }}
+                className="group relative p-8 rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-slate-900/50 to-slate-800/50 backdrop-blur-sm hover:bg-cyan-500/10 transition-all duration-300"
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Icon className="w-6 h-6 text-white" />
+                {/* Glow effect on hover */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/0 to-blue-500/0 group-hover:from-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-300" />
+                
+                <div className="relative z-10">
+                  <div className="w-14 h-14 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:from-cyan-500/40 group-hover:to-blue-500/40 transition-all duration-300">
+                    <Icon className="w-7 h-7 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-cyan-300 transition-colors">{feature.title}</h3>
+                  <p className="text-gray-400 group-hover:text-gray-300 transition-colors leading-relaxed">{feature.description}</p>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-400">{feature.description}</p>
+
+                {/* Border glow on hover */}
+                <div className="absolute inset-0 rounded-2xl border border-cyan-400/0 group-hover:border-cyan-400/30 transition-all duration-300" />
               </motion.div>
             );
           })}

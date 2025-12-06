@@ -21,20 +21,20 @@ export default function Navbar({ currentPage, setCurrentPage, isAuthenticated, o
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 glass border-b border-white/10 overflow-hidden">
+    <nav className="fixed top-0 w-full z-50 border-b border-cyan-500/20 bg-gradient-to-b from-slate-900/80 to-slate-900/40 backdrop-blur-xl overflow-hidden">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center gap-2 cursor-pointer group"
             onClick={() => setCurrentPage('home')}
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-emerald-500 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center group-hover:shadow-lg group-hover:shadow-cyan-500/50 transition-all">
               <MessageCircle className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg gradient-text">LeadFilter</span>
+            <span className="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400">LeadFilter</span>
           </motion.div>
 
           {/* Desktop Menu */}
@@ -45,8 +45,8 @@ export default function Navbar({ currentPage, setCurrentPage, isAuthenticated, o
                 onClick={() => setCurrentPage(item.id)}
                 className={`relative text-sm font-medium transition-colors ${
                   currentPage === item.id
-                    ? 'text-indigo-400'
-                    : 'text-gray-300 hover:text-white'
+                    ? 'text-cyan-400'
+                    : 'text-gray-300 hover:text-cyan-300'
                 }`}
                 whileHover={{ scale: 1.05 }}
               >
@@ -54,7 +54,7 @@ export default function Navbar({ currentPage, setCurrentPage, isAuthenticated, o
                 {currentPage === item.id && (
                   <motion.div
                     layoutId="underline"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 to-emerald-500"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500"
                   />
                 )}
               </motion.button>
@@ -63,10 +63,10 @@ export default function Navbar({ currentPage, setCurrentPage, isAuthenticated, o
 
           {/* CTA Button */}
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(34, 211, 238, 0.3)' }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setCurrentPage('dashboard')}
-            className="hidden md:block px-6 py-2 bg-gradient-to-r from-indigo-500 to-emerald-500 text-white rounded-full text-sm font-medium hover:shadow-lg hover:shadow-indigo-500/50 transition-all"
+            className="hidden md:block px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-all"
           >
             Get Started
           </motion.button>
@@ -96,8 +96,8 @@ export default function Navbar({ currentPage, setCurrentPage, isAuthenticated, o
                 }}
                 className={`block w-full text-left px-4 py-2 rounded-lg transition-colors ${
                   currentPage === item.id
-                    ? 'bg-indigo-500/20 text-indigo-400'
-                    : 'text-gray-300 hover:bg-white/5'
+                    ? 'bg-cyan-500/20 text-cyan-400'
+                    : 'text-gray-300 hover:bg-cyan-500/10'
                 }`}
               >
                 {item.label}
