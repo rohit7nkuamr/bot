@@ -26,7 +26,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="w-full border-t border-cyan-500/20 mt-20 overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950">
+    <footer className="w-full border-t border-cyan-500/20 mt-0 overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-12">

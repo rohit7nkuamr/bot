@@ -57,11 +57,11 @@ export default function Features() {
   };
 
   return (
-    <section className="w-full py-24 px-4 sm:px-6 lg:px-8 overflow-hidden relative">
+    <section className="w-full py-20 px-4 sm:px-6 lg:px-8 overflow-hidden relative">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-blue-900/20 to-slate-900 -z-10" />
       
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full max-w-7xl mx-auto px-0">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

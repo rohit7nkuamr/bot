@@ -29,7 +29,7 @@ export default function Hero({ setCurrentPage }: HeroProps) {
   };
 
   return (
-    <section className="w-full min-h-screen flex items-center justify-center pt-20 px-4 sm:px-6 lg:px-8 overflow-hidden relative">
+    <section className="w-full min-h-screen flex items-center justify-center pt-32 px-4 sm:px-6 lg:px-8 overflow-hidden relative">
       {/* Animated background orb */}
       <motion.div
         animate={{ 
@@ -44,7 +44,7 @@ export default function Hero({ setCurrentPage }: HeroProps) {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="w-full max-w-5xl mx-auto text-center"
+        className="w-full max-w-6xl mx-auto text-center px-0"
       >
         {/* Badge */}
         <motion.div variants={itemVariants} className="mb-8">
