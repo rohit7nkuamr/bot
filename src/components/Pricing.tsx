@@ -4,7 +4,11 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Check, ArrowRight } from 'lucide-react';
 
-export default function Pricing() {
+interface PricingProps {
+  setCurrentPage?: () => void;
+}
+
+export default function Pricing({ setCurrentPage }: PricingProps = {}) {
   const plans = [
     {
       name: 'Starter',

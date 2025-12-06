@@ -7,6 +7,9 @@ import { MessageCircle, Menu, X, ArrowRight } from 'lucide-react';
 
 interface NavbarProps {
   isAuthenticated: boolean;
+  currentPage?: string;
+  setCurrentPage?: (page: string) => void;
+  onAuthClick?: () => void;
 }
 
 export default function Navbar({ isAuthenticated }: NavbarProps) {

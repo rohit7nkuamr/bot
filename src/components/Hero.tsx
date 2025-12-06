@@ -4,7 +4,11 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Terminal, Zap, Shield, Sparkles } from 'lucide-react';
 
-export default function Hero() {
+interface HeroProps {
+  setCurrentPage?: () => void;
+}
+
+export default function Hero({ setCurrentPage }: HeroProps = {}) {
   return (
     <section className="relative w-full min-h-screen flex flex-col items-center justify-center pt-24 overflow-hidden bg-background">
       {/* Background Aurora */}
