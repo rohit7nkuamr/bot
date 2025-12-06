@@ -28,13 +28,14 @@ export default function Home() {
   // Show auth pages if not authenticated and auth mode is set
   if (!isAuthenticated && authMode) {
     return (
-      <div className="relative w-screen min-h-screen overflow-x-hidden">
-        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl -translate-x-1/2"></div>
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl translate-x-1/2"></div>
+      <div className="min-h-screen w-full bg-[#050505] text-white overflow-x-hidden relative flex items-center justify-center">
+        {/* Background Gradients */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-cyan-500/10 rounded-full blur-[120px]" />
         </div>
 
-        <div className="relative z-10 w-full">
+        <div className="relative z-10 w-full max-w-md mx-auto px-4">
           {authMode === 'login' ? (
             <LoginPage
               onSuccess={() => {
@@ -68,13 +69,13 @@ export default function Home() {
 
       {/* Main content */}
       <div className="relative z-10 w-full">
-        <Navbar 
-          currentPage={currentPage} 
+        <Navbar
+          currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           isAuthenticated={isAuthenticated}
           onAuthClick={() => setAuthMode('login')}
         />
-        
+
         {currentPage === 'home' && !isAuthenticated && (
           <>
             <Hero setCurrentPage={() => setAuthMode('signup')} />
@@ -82,9 +83,9 @@ export default function Home() {
             <Pricing setCurrentPage={() => setAuthMode('signup')} />
           </>
         )}
-        
+
         {currentPage === 'dashboard' && isAuthenticated && <Dashboard />}
-        
+
         {!isAuthenticated && currentPage !== 'home' && (
           <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
@@ -98,7 +99,7 @@ export default function Home() {
             </div>
           </div>
         )}
-        
+
         <Footer />
       </div>
     </div>

@@ -1,249 +1,149 @@
 'use client';
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, Users, Star } from 'lucide-react';
-import Image from 'next/image';
+import { ArrowRight, Terminal, Zap, Shield, Sparkles } from 'lucide-react';
 
-interface HeroProps {
-  setCurrentPage: (page: string) => void;
-}
-
-export default function Hero({ setCurrentPage }: HeroProps) {
+export default function Hero() {
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-blue-900/20">
-      {/* Soft, warm background gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-900 to-slate-900" />
-      
-      {/* Subtle grid pattern for depth */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)] opacity-20" />
+    <section className="relative w-full min-h-screen flex flex-col items-center justify-center pt-24 overflow-hidden bg-background">
+      {/* Background Aurora */}
+      <div className="absolute inset-0 bg-aurora opacity-40 pointer-events-none" />
+      <div className="absolute inset-0 bg-grid-small-white opacity-[0.2]" />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left Column - Content */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-left"
-          >
-            {/* Trust Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6"
-            >
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              <span className="text-sm text-emerald-300 font-medium">Trusted by 100+ Indian businesses</span>
-            </motion.div>
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
 
-            {/* Headline - Conversational & Human */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
-            >
-              <span className="text-white">Stop Wasting Time on</span>
-              <br />
-              <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                Junk Leads
-              </span>
-            </motion.h1>
-
-            {/* Subheading - Relatable Problem */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-xl text-gray-300 mb-8 leading-relaxed max-w-xl"
-            >
-              We know the pain. You get 50 leads from IndiaMART, but only 5 are real. 
-              Our AI WhatsApp bot filters them automatically, so you only talk to serious buyers.
-            </motion.p>
-
-            {/* Social Proof - Real Numbers */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex flex-wrap items-center gap-6 mb-8"
-            >
-              <div className="flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 border-2 border-slate-900 flex items-center justify-center text-white font-semibold text-sm"
-                    >
-                      {String.fromCharCode(64 + i)}
-                    </div>
-                  ))}
-                </div>
-                <div className="text-sm">
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-gray-400">Loved by 100+ sellers</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* CTA Buttons - Clear Hierarchy */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4"
-            >
-              <motion.button
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setCurrentPage('dashboard')}
-                className="group px-8 py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all"
-              >
-                Start Free Trial
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </motion.button>
-              
-              <motion.button
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-xl font-semibold text-lg hover:bg-white/10 hover:border-white/20 transition-all backdrop-blur-sm"
-              >
-                See How It Works
-              </motion.button>
-            </motion.div>
-
-            {/* Trust Indicators */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="mt-8 flex flex-wrap items-center gap-6 text-sm text-gray-400"
-            >
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>No credit card required</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>14-day free trial</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Cancel anytime</span>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* Right Column - Visual Proof */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative"
-          >
-            {/* Main Card - Testimonial/Demo */}
-            <div className="relative">
-              {/* Floating testimonial card */}
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl"
-              >
-                {/* Customer Testimonial */}
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-400 flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
-                    R
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold text-lg">Rajesh Kumar</h3>
-                    <p className="text-gray-400 text-sm">Manufacturing Business Owner</p>
-                    <div className="flex items-center gap-1 mt-1">
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                <p className="text-gray-300 text-lg leading-relaxed mb-4">
-                  "I used to spend 2-3 hours daily filtering IndiaMART leads. Now LeadFilter does it automatically. 
-                  I only get calls from serious buyers. <span className="text-emerald-400 font-semibold">Worth every rupee!</span>"
-                </p>
-                
-                <div className="flex items-center gap-4 pt-4 border-t border-white/10">
-                  <div>
-                    <div className="text-2xl font-bold text-emerald-400">90%</div>
-                    <div className="text-xs text-gray-400">Junk Filtered</div>
-                  </div>
-                  <div className="w-px h-10 bg-white/10" />
-                  <div>
-                    <div className="text-2xl font-bold text-cyan-400">2.5hrs</div>
-                    <div className="text-xs text-gray-400">Saved Daily</div>
-                  </div>
-                  <div className="w-px h-10 bg-white/10" />
-                  <div>
-                    <div className="text-2xl font-bold text-blue-400">3x</div>
-                    <div className="text-xs text-gray-400">More Sales</div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Floating stat cards */}
-              <motion.div
-                animate={{ y: [0, -15, 0], rotate: [0, 2, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute -top-6 -right-6 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl p-4 shadow-xl"
-              >
-                <div className="text-white text-center">
-                  <div className="text-3xl font-bold">₹50k+</div>
-                  <div className="text-xs opacity-90">Saved Monthly</div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, 10, 0], rotate: [0, -2, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-                className="absolute -bottom-4 -left-4 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl p-4 shadow-xl"
-              >
-                <div className="text-white text-center">
-                  <div className="text-3xl font-bold">24/7</div>
-                  <div className="text-xs opacity-90">AI Working</div>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Bottom Stats Bar - Social Proof */}
+        {/* Badge */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 border-t border-white/10"
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md"
         >
-          {[
-            { number: '100+', label: 'Happy Customers' },
-            { number: '10,000+', label: 'Leads Filtered' },
-            { number: '2.5hrs', label: 'Avg. Time Saved' },
-            { number: '4.9/5', label: 'Customer Rating' },
-          ].map((stat, i) => (
-            <motion.div
-              key={i}
-              whileHover={{ scale: 1.05, y: -5 }}
-              className="text-center"
-            >
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-2">
-                {stat.number}
-              </div>
-              <div className="text-sm text-gray-400">{stat.label}</div>
-            </motion.div>
-          ))}
+          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="text-xs font-medium text-zinc-300 tracking-wide">AI-POWERED LEAD QUALIFICATION</span>
         </motion.div>
+
+        {/* Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="text-5xl md:text-7xl font-bold tracking-tight mb-8 text-white max-w-4xl"
+        >
+          Qualify Leads at <br />
+          <span className="text-gradient">Human Speed.</span>
+        </motion.h1>
+
+        {/* Subhead */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-12 leading-relaxed"
+        >
+          Stop wasting hours on junk leads. Let our AI agent handle WhatsApp qualification while you focus on closing the serious buyers.
+        </motion.p>
+
+        {/* CTAs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="flex flex-col sm:flex-row items-center gap-4 mb-20"
+        >
+          <Link href="/signup" className="px-8 py-4 bg-white text-black rounded-xl font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+            Start Free Trial <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link href="/docs" className="px-8 py-4 bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-xl font-medium hover:bg-zinc-800 transition-colors flex items-center gap-2">
+            <Terminal className="w-4 h-4" /> View Documentation
+          </Link>
+        </motion.div>
+
+        {/* IDE Visualization */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="w-full max-w-5xl rounded-xl overflow-hidden glass shadow-2xl border border-white/10 relative group"
+        >
+          {/* Window Controls */}
+          <div className="h-10 bg-zinc-950/50 border-b border-white/5 flex items-center px-4 gap-2">
+            <div className="flex gap-2">
+              <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
+              <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
+              <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50" />
+            </div>
+            <div className="ml-4 text-xs text-zinc-500 font-mono">lead_filter_agent.ts</div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-[2fr_1.5fr] h-[400px] bg-black/80">
+            {/* Code / Logic Side */}
+            <div className="p-6 font-mono text-sm border-r border-white/5 text-left hidden md:block">
+              <div className="text-zinc-500 mb-2">{'// AI Logic: Lead Qualification Flow'}</div>
+              <div className="space-y-1">
+                <div className="flex"><span className="text-purple-400">const</span> <span className="text-blue-400 pl-2">qualifyLead</span> <span className="text-zinc-600">=</span> <span className="text-purple-400">async</span> (msg) <span className="text-zinc-600">{'=>'}</span> {'{'}</div>
+                <div className="pl-4 flex"><span className="text-purple-400">const</span> <span className="text-orange-300 pl-2">intent</span> <span className="text-zinc-600">=</span> <span className="text-blue-400">analyze</span>(msg.text);</div>
+                <div className="pl-4 flex"><span className="text-purple-400">if</span> (intent.score {'>'} <span className="text-green-400">0.9</span>) {'{'}</div>
+                <div className="pl-8 flex"><span className="text-zinc-500">{'// Hot lead detected'}</span></div>
+                <div className="pl-8 flex"><span className="text-yellow-400">notifySalesTeam</span>(intent);</div>
+                <div className="pl-4 flex">{'}'} <span className="text-purple-400">else</span> {'{'}</div>
+                <div className="pl-8 flex"><span className="text-blue-400">askFollowUp</span>(intent.missingInfo);</div>
+                <div className="pl-4 flex">{'}'}</div>
+                <div className="flex">{'}'}</div>
+              </div>
+
+              <div className="mt-8 p-4 rounded-lg bg-zinc-900/50 border border-white/5">
+                <div className="flex items-center gap-2 text-xs text-zinc-400 mb-2">
+                  <Zap className="w-3 h-3 text-yellow-500" /> AI Confidence Score
+                </div>
+                <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 w-[92%]" />
+                </div>
+              </div>
+            </div>
+
+            {/* Chat Preview Side */}
+            <div className="p-6 bg-zinc-900/30 flex flex-col">
+              <div className="flex-1 space-y-4">
+                {/* User Msg */}
+                <div className="flex items-start gap-3 justify-end opacity-60">
+                  <div className="bg-zinc-800 px-3 py-2 rounded-2xl rounded-tr-sm text-xs text-zinc-300 max-w-[80%]">
+                    Hi, I'm interested in the industrial water pumps. Do you have the X500?
+                  </div>
+                </div>
+
+                {/* AI Msg */}
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20">
+                    <Sparkles className="w-3 h-3 text-cyan-400" />
+                  </div>
+                  <div className="bg-cyan-950/30 border border-cyan-900/30 px-3 py-2 rounded-2xl rounded-tl-sm text-xs text-cyan-100 max-w-[90%]">
+                    Yes, we have the Model-X500 in stock (5 units). It's rated for 5000L/hr. Would you like a quote?
+                  </div>
+                </div>
+
+                {/* Status */}
+                <div className="mt-4 flex items-center justify-center">
+                  <div className="px-2 py-1 rounded bg-green-500/10 border border-green-500/20 text-[10px] text-green-400 font-mono tracking-wider uppercase">
+                    Lead Qualified
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Reflection */}
+          <div className="absolute top-full left-0 right-0 h-40 bg-gradient-to-b from-cyan-500/10 to-transparent blur-3xl -z-10 opacity-30" />
+        </motion.div>
+
+        {/* Floating Icons */}
+        <div className="absolute top-1/4 left-10 hidden lg:block opacity-20 animate-float">
+          <Terminal className="w-24 h-24 text-white" />
+        </div>
+        <div className="absolute bottom-1/4 right-10 hidden lg:block opacity-20 animate-float" style={{ animationDelay: '2s' }}>
+          <Shield className="w-20 h-20 text-white" />
+        </div>
       </div>
     </section>
   );

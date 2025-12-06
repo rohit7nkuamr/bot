@@ -1,111 +1,147 @@
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Menu, X, MessageCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MessageCircle, Menu, X, ArrowRight } from 'lucide-react';
 
 interface NavbarProps {
-  currentPage: string;
-  setCurrentPage: (page: string) => void;
-  isAuthenticated?: boolean;
-  onAuthClick?: () => void;
+  isAuthenticated: boolean;
 }
 
-export default function Navbar({ currentPage, setCurrentPage, isAuthenticated, onAuthClick }: NavbarProps) {
+export default function Navbar({ isAuthenticated }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navItems = [
-    { label: 'Home', id: 'home' },
-    { label: 'Dashboard', id: 'dashboard' },
-    { label: 'Pricing', id: 'pricing' },
+    { label: 'Product', href: '/#features' },
+    { label: 'Pricing', href: '/pricing' },
+    { label: 'Docs', href: '/docs' },
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 border-b border-cyan-500/20 bg-gradient-to-b from-slate-900/80 to-slate-900/40 backdrop-blur-xl overflow-hidden">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <>
+      <motion.nav
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl transition-all duration-300 ${scrolled || isOpen
+          ? 'glass rounded-2xl shadow-2xl shadow-cyan-500/5'
+          : 'bg-transparent'
+          }`}
+      >
+        <div className="px-6 h-14 flex items-center justify-between">
           {/* Logo */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2 cursor-pointer group"
-            onClick={() => setCurrentPage('home')}
+          <Link
+            className="flex items-center gap-2 cursor-pointer"
+            href="/"
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center group-hover:shadow-lg group-hover:shadow-cyan-500/50 transition-all">
-              <MessageCircle className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
+              <MessageCircle className="w-5 h-5 text-cyan-400" />
             </div>
-            <span className="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400">LeadFilter</span>
-          </motion.div>
+            <span className="font-bold text-lg text-white tracking-tight">LeadFilter</span>
+          </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
-              <motion.button
-                key={item.id}
-                onClick={() => setCurrentPage(item.id)}
-                className={`relative text-sm font-medium transition-colors ${
-                  currentPage === item.id
-                    ? 'text-cyan-400'
-                    : 'text-gray-300 hover:text-cyan-300'
-                }`}
-                whileHover={{ scale: 1.05 }}
+              <Link
+                key={item.label}
+                href={item.href}
+                className="px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors duration-200 font-medium"
               >
                 {item.label}
-                {currentPage === item.id && (
-                  <motion.div
-                    layoutId="underline"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500"
-                  />
-                )}
-              </motion.button>
+              </Link>
             ))}
           </div>
 
-          {/* CTA Button */}
-          <motion.button
-            whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(34, 211, 238, 0.3)' }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setCurrentPage('dashboard')}
-            className="hidden md:block px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-all"
-          >
-            Get Started
-          </motion.button>
+          {/* Auth Button */}
+          <div className="hidden md:flex items-center gap-4">
+            {isAuthenticated ? (
+              <Link
+                href="/dashboard"
+                className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-all"
+              >
+                Dashboard
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm font-medium text-zinc-300 hover:text-white transition-colors"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)]"
+                >
+                  Get Started
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+              </>
+            )}
+          </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Toggle */}
           <button
-            className="md:hidden text-white"
+            className="md:hidden p-2 text-zinc-400 hover:text-white"
             onClick={() => setIsOpen(!isOpen)}
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
         {/* Mobile Menu */}
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="md:hidden pb-4 space-y-2"
-          >
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setCurrentPage(item.id);
-                  setIsOpen(false);
-                }}
-                className={`block w-full text-left px-4 py-2 rounded-lg transition-colors ${
-                  currentPage === item.id
-                    ? 'bg-cyan-500/20 text-cyan-400'
-                    : 'text-gray-300 hover:bg-cyan-500/10'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </motion.div>
-        )}
-      </div>
-    </nav>
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="md:hidden overflow-hidden border-t border-white/5 bg-zinc-950/90 backdrop-blur-xl rounded-b-2xl"
+            >
+              <div className="p-4 space-y-4">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="block w-full text-left py-2 text-zinc-400 hover:text-white transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <div className="pt-4 border-t border-white/5 flex flex-col gap-3">
+                  {isAuthenticated ? (
+                    <Link href="/dashboard" className="w-full py-2 bg-cyan-500 text-black font-semibold rounded-lg text-center" onClick={() => setIsOpen(false)}>
+                      Go to Dashboard
+                    </Link>
+                  ) : (
+                    <>
+                      <Link href="/login" className="w-full py-2 text-zinc-400 hover:text-white text-center" onClick={() => setIsOpen(false)}>
+                        Log in
+                      </Link>
+                      <Link href="/signup" className="w-full py-2 bg-cyan-500 text-black font-semibold rounded-lg text-center" onClick={() => setIsOpen(false)}>
+                        Get Started
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.nav>
+    </>
   );
 }
