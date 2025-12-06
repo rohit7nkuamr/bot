@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserLeads, createLead, getLeadStats } from '@/lib/leads';
-import { getCurrentSession } from '@/lib/auth';
+import { getCurrentSession, hasReachedLeadLimit, incrementLeadsUsed } from '@/lib/auth';
 
 /**
  * Leads API Routes
@@ -78,6 +78,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if user has reached their lead limit
+    const limitReached = await hasReachedLeadLimit(userId);
+    if (limitReached) {
+      return NextResponse.json(
+        { error: 'You have reached your monthly lead limit. Please upgrade your plan.' },
+        { status: 429 }
+      );
+    }
+
     // Create lead
     const lead = await createLead(userId, {
       phone,
@@ -85,6 +94,9 @@ export async function POST(request: NextRequest) {
       budget,
       raw_data,
     });
+
+    // Increment user's lead count
+    await incrementLeadsUsed(userId);
 
     return NextResponse.json(
       {

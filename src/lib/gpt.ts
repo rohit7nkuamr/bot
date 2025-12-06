@@ -11,7 +11,10 @@ const parseCache = new Map<string, any>();
  * Parse lead data using GPT-4o-mini with caching
  * COST OPTIMIZATION: Caches results to avoid duplicate API calls
  */
-export async function parseLeadData(rawData: string): Promise<{
+export async function parseLeadData(
+  rawData: string,
+  plan: 'starter' | 'business' | 'enterprise' = 'starter'
+): Promise<{
   name: string;
   budget: number | null;
   requirements: string;
@@ -26,21 +29,32 @@ export async function parseLeadData(rawData: string): Promise<{
       return parseCache.get(cacheKey);
     }
 
+    const isAdvanced = plan === 'business' || plan === 'enterprise';
+
+    const model = isAdvanced ? 'gpt-4-turbo' : 'gpt-4o-mini';
+
+    const systemPrompt = isAdvanced
+      ? `You are a world-class sales analyst specializing in the Indian market. Your task is to perform a deep analysis of the provided lead information from IndiaMART. Go beyond keywords and infer the lead's true purchase intent, urgency, and budget capacity based on language, sentiment, and context. Return a detailed JSON object with:
+         - name: Lead name (1-2 words)
+         - budget: Budget in INR (number or null). Infer if not stated.
+         - requirements: A detailed summary of what they need.
+         - timeline: Timeline (e.g., 'Immediate', 'Next Quarter').
+         - sentiment: 'Positive', 'Neutral', or 'Negative'.
+         - purchase_intent: 'High', 'Medium', or 'Low'.
+         - qualification_score: A highly accurate 0-100 score based on all factors. Be discerning.`
+      : `You are an expert lead qualifier for IndiaMART. Analyze the provided lead information and extract key details CONCISELY. Return a JSON object with:
+         - name: Lead name (1-2 words)
+         - budget: Budget in INR (number or null)
+         - requirements: What they need (1 sentence max)
+         - timeline: Timeline (1-2 words)
+         - qualification_score: 0-100 score. Be strict - only score above 70 for high-quality leads.`;
+
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model,
       messages: [
         {
           role: 'system',
-          content: `You are an expert lead qualifier for IndiaMART. Analyze the provided lead information and extract key details CONCISELY.
-          
-          Return a JSON object with:
-          - name: Lead name (1-2 words)
-          - budget: Budget in INR (number or null)
-          - requirements: What they need (1 sentence max)
-          - timeline: Timeline (1-2 words)
-          - qualification_score: 0-100 score
-          
-          Be strict - only score above 70 for high-quality leads.`,
+          content: systemPrompt,
         },
         {
           role: 'user',

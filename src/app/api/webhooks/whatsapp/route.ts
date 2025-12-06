@@ -59,9 +59,10 @@ export async function POST(request: NextRequest) {
     const { phoneNumber, text, contactName } = parsedMessage;
 
     // Get or create lead
+    // Get or create lead and its associated user
     const { data: existingLead } = await supabaseServer
       .from('leads')
-      .select('*')
+      .select('*, users(*)')
       .eq('phone', phoneNumber)
       .single();
 
@@ -69,10 +70,12 @@ export async function POST(request: NextRequest) {
 
     if (!lead) {
       // Create new lead
-      // Find user who owns this phone (for now, use a default or system user)
+      // This is a placeholder. In a real app, you'd have a system to map
+      // incoming numbers to users, likely via an IndiaMART API key.
+      // For now, we'll assign it to the first user.
       const { data: users } = await supabaseServer
         .from('users')
-        .select('id')
+        .select('*')
         .limit(1);
 
       if (!users || users.length === 0) {
@@ -83,16 +86,19 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const userId = users[0].id;
+      const user = users[0];
 
-      // Parse lead data using GPT
-      const parsedData = await parseLeadData(text || 'Inquiry from WhatsApp');
+      // Parse lead data using GPT, passing the user's plan
+      const parsedData = await parseLeadData(
+        text || 'Inquiry from WhatsApp',
+        user.subscription_plan
+      );
 
       // Create lead in database
       const { data: newLead } = await supabaseServer
         .from('leads')
         .insert({
-          user_id: userId,
+          user_id: user.id,
           phone: phoneNumber,
           name: contactName || parsedData.name,
           raw_data: { message: text },
