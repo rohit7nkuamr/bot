@@ -98,24 +98,58 @@ export default function Pricing({ setCurrentPage }: PricingProps) {
               key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
-              whileHover={{ y: -12, borderColor: 'rgba(34, 211, 238, 0.6)' }}
-              className={`relative rounded-2xl p-8 transition-all border backdrop-blur-sm ${
+              whileHover={{ 
+                y: -16, 
+                borderColor: 'rgba(34, 211, 238, 0.6)',
+                boxShadow: '0 30px 60px rgba(34, 211, 238, 0.3)',
+                rotateX: 3,
+                rotateY: 3,
+                scale: 1.02
+              }}
+              transition={{ 
+                duration: 0.6, 
+                delay: index * 0.1,
+                type: "spring", 
+                stiffness: 300, 
+                damping: 20 
+              }}
+              className={`group relative rounded-2xl p-8 transition-all border backdrop-blur-sm cursor-pointer ${
                 plan.highlighted
                   ? 'border-cyan-500/50 bg-gradient-to-br from-cyan-500/15 to-blue-500/15 ring-2 ring-cyan-500/20 md:scale-105'
                   : 'border-cyan-500/20 bg-gradient-to-br from-slate-900/50 to-slate-800/50 hover:bg-cyan-500/10'
               }`}
+              style={{ transformStyle: 'preserve-3d' }}
             >
+              {/* Shine effect */}
+              <motion.div
+                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{
+                  background: 'linear-gradient(135deg, transparent 0%, rgba(34, 211, 238, 0.15) 50%, transparent 100%)',
+                }}
+                animate={{
+                  x: ['-100%', '100%'],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatDelay: 4,
+                }}
+              />
+
               {plan.highlighted && (
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <motion.div 
+                  className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
                   <span className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg shadow-cyan-500/30">
                     ⭐ Most Popular
                   </span>
-                </div>
+                </motion.div>
               )}
 
-              <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
+              <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors relative z-10">{plan.name}</h3>
               <p className="text-gray-400 text-sm mb-8">{plan.description}</p>
 
               <div className="mb-8">

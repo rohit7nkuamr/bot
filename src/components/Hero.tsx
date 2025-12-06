@@ -30,14 +30,34 @@ export default function Hero({ setCurrentPage }: HeroProps) {
 
   return (
     <section className="w-full min-h-screen flex items-center justify-center pt-32 px-4 sm:px-6 lg:px-8 overflow-hidden relative">
-      {/* Animated background orb */}
+      {/* Multiple animated background orbs */}
+      <motion.div
+        animate={{ 
+          scale: [1, 1.3, 1],
+          opacity: [0.2, 0.4, 0.2],
+          x: [0, 50, 0],
+          y: [0, -30, 0]
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl -z-10"
+      />
       <motion.div
         animate={{ 
           scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3]
+          opacity: [0.3, 0.5, 0.3],
+          x: [0, -40, 0],
+          y: [0, 40, 0]
         }}
-        transition={{ duration: 8, repeat: Infinity }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl -z-10"
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl -z-10"
+      />
+      <motion.div
+        animate={{ 
+          scale: [1, 1.4, 1],
+          opacity: [0.15, 0.3, 0.15]
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="absolute top-1/2 right-1/3 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl -z-10"
       />
 
       <motion.div
@@ -80,19 +100,41 @@ export default function Hero({ setCurrentPage }: HeroProps) {
           className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
         >
           <motion.button
-            whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(34, 211, 238, 0.5)' }}
+            whileHover={{ 
+              scale: 1.05, 
+              boxShadow: '0 0 40px rgba(34, 211, 238, 0.6), 0 0 80px rgba(34, 211, 238, 0.3)',
+              y: -2
+            }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setCurrentPage('dashboard')}
-            className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all"
+            className="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2 overflow-hidden transition-all"
           >
-            Get Started <ArrowRight className="w-5 h-5" />
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500"
+              initial={{ x: '-100%' }}
+              whileHover={{ x: '100%' }}
+              transition={{ duration: 0.6 }}
+            />
+            <span className="relative z-10">Get Started</span>
+            <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
           </motion.button>
           <motion.button
-            whileHover={{ scale: 1.05, borderColor: 'rgba(34, 211, 238, 0.8)' }}
+            whileHover={{ 
+              scale: 1.05, 
+              borderColor: 'rgba(34, 211, 238, 0.8)',
+              backgroundColor: 'rgba(34, 211, 238, 0.1)',
+              y: -2
+            }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 border border-cyan-500/30 text-white rounded-lg font-semibold hover:bg-cyan-500/10 transition-all flex items-center justify-center gap-2"
+            className="group px-8 py-4 border border-cyan-500/30 text-white rounded-lg font-semibold hover:bg-cyan-500/10 transition-all flex items-center justify-center gap-2 relative overflow-hidden"
           >
-            <Play className="w-4 h-4" /> See it in Action
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/10 to-cyan-500/0"
+              animate={{ x: ['-100%', '100%'] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            />
+            <Play className="w-4 h-4 relative z-10 group-hover:scale-110 transition-transform" />
+            <span className="relative z-10">See it in Action</span>
           </motion.button>
         </motion.div>
 
@@ -108,12 +150,26 @@ export default function Hero({ setCurrentPage }: HeroProps) {
           ].map((feature, i) => (
             <motion.div
               key={i}
-              whileHover={{ y: -5, borderColor: 'rgba(34, 211, 238, 0.6)' }}
-              className="p-6 rounded-xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 backdrop-blur-sm hover:bg-cyan-500/10 transition-all"
+              whileHover={{ 
+                y: -8, 
+                borderColor: 'rgba(34, 211, 238, 0.6)',
+                boxShadow: '0 20px 40px rgba(34, 211, 238, 0.2)',
+                rotateX: 5,
+                rotateY: 5
+              }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="group p-6 rounded-xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 backdrop-blur-sm hover:bg-cyan-500/10 transition-all cursor-pointer"
+              style={{ transformStyle: 'preserve-3d' }}
             >
-              <div className="text-3xl mb-3">{feature.icon}</div>
-              <h3 className="text-white font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-400 text-sm">{feature.desc}</p>
+              <motion.div 
+                className="text-3xl mb-3"
+                whileHover={{ scale: 1.2, rotate: 10 }}
+                transition={{ type: "spring", stiffness: 400 }}
+              >
+                {feature.icon}
+              </motion.div>
+              <h3 className="text-white font-semibold mb-2 group-hover:text-cyan-300 transition-colors">{feature.title}</h3>
+              <p className="text-gray-400 text-sm group-hover:text-gray-300 transition-colors">{feature.desc}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -123,14 +179,14 @@ export default function Hero({ setCurrentPage }: HeroProps) {
           variants={itemVariants}
           className="relative h-80 mt-12 flex items-center justify-center"
         >
-          {/* Central glowing orb */}
+          {/* Central glowing orb with multiple rings */}
           <motion.div
             animate={{ 
               rotate: 360,
               boxShadow: [
-                '0 0 40px rgba(34, 211, 238, 0.4)',
-                '0 0 60px rgba(34, 211, 238, 0.6)',
-                '0 0 40px rgba(34, 211, 238, 0.4)',
+                '0 0 40px rgba(34, 211, 238, 0.4), inset 0 0 20px rgba(34, 211, 238, 0.2)',
+                '0 0 80px rgba(34, 211, 238, 0.6), inset 0 0 40px rgba(34, 211, 238, 0.4)',
+                '0 0 40px rgba(34, 211, 238, 0.4), inset 0 0 20px rgba(34, 211, 238, 0.2)',
               ]
             }}
             transition={{ duration: 6, repeat: Infinity }}
@@ -141,6 +197,15 @@ export default function Hero({ setCurrentPage }: HeroProps) {
             animate={{ rotate: -360 }}
             transition={{ duration: 8, repeat: Infinity }}
             className="absolute w-56 h-56 rounded-full border border-cyan-400/20"
+          />
+          
+          <motion.div
+            animate={{ 
+              rotate: 360,
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ duration: 10, repeat: Infinity }}
+            className="absolute w-64 h-64 rounded-full border border-blue-400/10"
           />
 
           {/* Top Left Card */}

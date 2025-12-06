@@ -99,22 +99,62 @@ export default function Features() {
               <motion.div
                 key={index}
                 variants={itemVariants}
-                whileHover={{ y: -8, borderColor: 'rgba(34, 211, 238, 0.6)' }}
-                className="group relative p-8 rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-slate-900/50 to-slate-800/50 backdrop-blur-sm hover:bg-cyan-500/10 transition-all duration-300"
+                whileHover={{ 
+                  y: -12, 
+                  borderColor: 'rgba(34, 211, 238, 0.6)',
+                  boxShadow: '0 25px 50px rgba(34, 211, 238, 0.25)',
+                  rotateX: 5,
+                  rotateY: 5
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                className="group relative p-8 rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-slate-900/50 to-slate-800/50 backdrop-blur-sm hover:bg-cyan-500/10 transition-all duration-300 cursor-pointer"
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                {/* Glow effect on hover */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/0 to-blue-500/0 group-hover:from-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-300" />
+                {/* Animated glow effect on hover */}
+                <motion.div 
+                  className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/0 to-blue-500/0 group-hover:from-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-300"
+                  whileHover={{ scale: 1.05 }}
+                />
+                
+                {/* Shine effect */}
+                <motion.div
+                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: 'linear-gradient(135deg, transparent 0%, rgba(34, 211, 238, 0.1) 50%, transparent 100%)',
+                  }}
+                  animate={{
+                    x: ['-100%', '100%'],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    repeatDelay: 3,
+                  }}
+                />
                 
                 <div className="relative z-10">
-                  <div className="w-14 h-14 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:from-cyan-500/40 group-hover:to-blue-500/40 transition-all duration-300">
+                  <motion.div 
+                    className="w-14 h-14 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl flex items-center justify-center mb-5 group-hover:from-cyan-500/40 group-hover:to-blue-500/40 transition-all duration-300"
+                    whileHover={{ 
+                      scale: 1.15, 
+                      rotate: [0, -10, 10, 0],
+                      boxShadow: '0 10px 30px rgba(34, 211, 238, 0.4)'
+                    }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
                     <Icon className="w-7 h-7 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
-                  </div>
+                  </motion.div>
                   <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-cyan-300 transition-colors">{feature.title}</h3>
                   <p className="text-gray-400 group-hover:text-gray-300 transition-colors leading-relaxed">{feature.description}</p>
                 </div>
 
-                {/* Border glow on hover */}
-                <div className="absolute inset-0 rounded-2xl border border-cyan-400/0 group-hover:border-cyan-400/30 transition-all duration-300" />
+                {/* Animated border glow on hover */}
+                <motion.div 
+                  className="absolute inset-0 rounded-2xl border border-cyan-400/0 group-hover:border-cyan-400/40 transition-all duration-300"
+                  whileHover={{
+                    boxShadow: '0 0 20px rgba(34, 211, 238, 0.3)'
+                  }}
+                />
               </motion.div>
             );
           })}
