@@ -17,6 +17,7 @@ const docsNavigation = [
     category: 'Core Concepts',
     items: [
       { title: 'AI Qualification', slug: 'ai-qualification' },
+      { title: 'Lead Sources', slug: 'lead-sources' },
       { title: 'WhatsApp Automation', slug: 'whatsapp-automation' },
     ],
   },
@@ -38,7 +39,7 @@ const docsNavigation = [
   },
 ];
 
-export default function DocsLayout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
@@ -58,11 +59,10 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
                       <li key={item.slug}>
                         <Link
                           href={`/docs/${item.slug}`}
-                          className={`block pl-4 text-sm transition-colors border-l -ml-[1px] ${
-                            isActive
-                              ? 'text-cyan-400 border-cyan-400'
-                              : 'text-zinc-400 hover:text-cyan-400 border-transparent hover:border-cyan-400'
-                          }`}
+                          className={`block pl-4 text-sm transition-colors border-l -ml-[1px] ${isActive
+                            ? 'text-cyan-400 border-cyan-400'
+                            : 'text-zinc-400 hover:text-cyan-400 border-transparent hover:border-cyan-400'
+                            }`}
                         >
                           {item.title}
                         </Link>

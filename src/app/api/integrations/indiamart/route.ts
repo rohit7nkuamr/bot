@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getCurrentSession } from '@/lib/auth';
-import { supabaseServer } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
+// import { verifyIndiamartKey } from '@/lib/indiamart'; // TODO: Add verification logic
 
-// A placeholder for a real encryption library
-const encrypt = (text: string) => `encrypted_${text}`;
-const decrypt = (text: string) => text.replace('encrypted_', '');
-
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const session = await getCurrentSession();
     if (!session?.user) {
@@ -14,28 +11,29 @@ export async function POST(request: NextRequest) {
     }
 
     const { apiKey } = await request.json();
+
     if (!apiKey) {
       return NextResponse.json({ error: 'API Key is required' }, { status: 400 });
     }
 
-    // TODO: In a real app, you would validate the API key with IndiaMART here
+    // TODO: Verify key validity by making a test request to Indiamart
 
-    // Encrypt and store the API key
-    const encryptedKey = encrypt(apiKey);
+    // Upsert integration
+    const { error } = await supabase
+      .from('user_integrations')
+      .upsert({
+        user_id: session.user.id,
+        platform: 'indiamart',
+        api_key: apiKey,
+        status: 'connected',
+        connected_at: new Date().toISOString(),
+      }, { onConflict: 'user_id, platform' });
 
-    const { error } = await supabaseServer
-      .from('users')
-      .update({ indiamart_api_key: encryptedKey })
-      .eq('id', session.user.id);
+    if (error) throw error;
 
-    if (error) {
-      throw error;
-    }
-
-    return NextResponse.json({ success: true, message: 'IndiaMART connected successfully' });
-
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('IndiaMART connection error:', error);
-    return NextResponse.json({ error: 'Failed to connect to IndiaMART' }, { status: 500 });
+    console.error('IndiaMART Connect Error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

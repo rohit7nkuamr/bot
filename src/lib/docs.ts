@@ -24,18 +24,12 @@ export const DOCS_CONTENT: Record<string, { title: string; content: string }> = 
       <h2 class="text-2xl font-bold text-white mt-12 mb-4">Step 1: Sign Up</h2>
       <p class="text-zinc-400 mb-4">Choose a plan and create your account. Once you sign up, you'll be taken directly to your dashboard.</p>
       
-      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Step 2: Connect WhatsApp</h2>
-      <p class="text-zinc-400 mb-4">This is the most critical step. Go to the <b>Settings → Integrations</b> page and connect your WhatsApp Business Account. You will need your Account SID and Auth Token from your Twilio dashboard.</p>
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Step 2: Add Your WhatsApp Number</h2>
+      <p class="text-zinc-400 mb-4">Go to <b>Settings → Integrations</b> and click 'Connect' on the WhatsApp card. Simply enter the WhatsApp number you want to use for receiving alerts.</p>
+      <p class="text-zinc-400 mb-4">You do <b>not</b> need to set up a Meta or Twilio account. We handle all the technical infrastructure for you.</p>
       
-      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Step 3: Configure Webhook</h2>
-      <p class="text-zinc-400 mb-4">In your Meta for Developers dashboard, you need to set your webhook URL to point to our server. This allows us to receive messages on your behalf.</p>
-      <div class="bg-zinc-950 p-4 rounded-lg border border-white/10 font-mono text-sm text-zinc-300 mt-4 mb-8">
-        <span class="text-green-400">POST</span> https://your-app-name.vercel.app/api/webhooks/whatsapp
-      </div>
-      <p class="text-zinc-400 mb-4">You will also need to add a Webhook Verify Token. You can generate any random string for this and add it to your environment variables as <code>META_WEBHOOK_VERIFY_TOKEN</code>.</p>
-
-      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Step 4: Watch the Magic!</h2>
-      <p class="text-zinc-400 mb-4">That's it! New incoming leads will now appear on your dashboard and the AI will begin qualifying them instantly.</p>
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Step 3: Watch the Magic!</h2>
+      <p class="text-zinc-400 mb-4">That's it! Our AI agent is now ready. Link your IndiaMART account next to start pulling in leads automatically.</p>
     `,
   },
   'ai-qualification': {
@@ -49,6 +43,36 @@ export const DOCS_CONTENT: Record<string, { title: string; content: string }> = 
       
       <h2 class="text-2xl font-bold text-white mt-12 mb-4">Business & Enterprise Plans: Advanced Intent Analysis</h2>
       <p class="text-zinc-400 mb-4">Users on our premium plans get access to our most powerful model, <b>GPT-4-turbo</b>. This model goes beyond simple data extraction. It performs a deep analysis of the lead's language to infer sentiment, purchase intent, and urgency, providing a much more accurate qualification score.</p>
+    `,
+  },
+  'lead-sources': {
+    title: 'Lead Sources & Verticals',
+    content: `
+      <p class="text-xl text-zinc-400 leading-relaxed mb-8">
+        LeadFilter is built to be platform-agnostic. While we started with B2B marketplaces, our ingestion engine is designed to handle leads from any vertical.
+      </p>
+      
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Supported Verticals</h2>
+      <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 text-zinc-400 mb-8">
+        <li class="flex items-center gap-2"><span class="text-cyan-400">✓</span> IndiaMART (Live)</li>
+        <li class="flex items-center gap-2"><span class="text-zinc-600">⌛</span> TradeIndia (Coming Soon)</li>
+        <li class="flex items-center gap-2"><span class="text-zinc-600">⌛</span> JustDial (Coming Soon)</li>
+        <li class="flex items-center gap-2"><span class="text-zinc-600">⌛</span> Facebook Lead Ads (Coming Soon)</li>
+        <li class="flex items-center gap-2"><span class="text-cyan-400">✓</span> CSV Upload / Manual Entry</li>
+        <li class="flex items-center gap-2"><span class="text-cyan-400">✓</span> Custom API Webhook</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">How We Pull Leads (The Backend Logic)</h2>
+      <p class="text-zinc-400 mb-4">For platforms that don't support real-time webhooks (like many legacy B2B portals), obtaining leads requires a robust polling architecture.</p>
+      
+      <h3 class="text-xl font-semibold text-white mt-8 mb-2">1. The "Pulse" (Cron Job) 💓</h3>
+      <p class="text-zinc-400 mb-4">Our system runs a scheduled task every <b>15 minutes</b> (customizable for Enterprise) to check for new data across all your connected accounts.</p>
+      
+      <h3 class="text-xl font-semibold text-white mt-8 mb-2">2. Intelligent Deduplication 🔄</h3>
+      <p class="text-zinc-400 mb-4">We blindly fetch the latest batch of leads and compare them against our database. If a Lead ID has already been processed, we skip it. This ensures zero duplicates, even if the source platform sends the same data twice.</p>
+      
+      <h3 class="text-xl font-semibold text-white mt-8 mb-2">3. Instant Trigger 🤖</h3>
+      <p class="text-zinc-400 mb-4">The moment a unique lead is identified, it is stored in your Dashboard and the AI Agent is <b>immediately</b> triggered to send the first WhatsApp message. No waiting.</p>
     `,
   },
   'integration-indiamart': {
@@ -92,6 +116,116 @@ export const DOCS_CONTENT: Record<string, { title: string; content: string }> = 
   "phone": "+919876543210",
   "budget": 50000,
   "raw_data": { "source": "Manual Entry" }
+}</pre>
+      <div class="bg-zinc-950 p-4 rounded-lg border border-white/10 font-mono text-sm text-zinc-300 mt-4 mb-8">
+        <span class="text-green-400">POST</span> /api/leads
+        <br><br>
+        <span class="text-purple-400">Body:</span>
+        <pre>{
+  "name": "Test Lead",
+  "phone": "+919876543210",
+  "budget": 50000,
+  "raw_data": { "source": "Manual Entry" }
+}</pre>
+      </div>
+    `,
+  },
+  'whatsapp-automation': {
+    title: 'WhatsApp Automation',
+    content: `
+      <p class="text-xl text-zinc-400 leading-relaxed mb-8">
+        Understand how LeadFilter interacts with your potential customers on WhatsApp.
+      </p>
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Fully Managed Service</h2>
+      <p class="text-zinc-400 mb-4">LeadFilter uses a verified WhatsApp Business API account to message your leads. You don't need to worry about hosting, API tokens, or server maintenance.</p>
+
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">The 24-Hour Rule</h2>
+      <p class="text-zinc-400 mb-4">Meta (WhatsApp) enforces a 24-hour customer service window. LeadFilter can reply freely to any user message within 24 hours. After that, we use approved Templates to re-engage the customer.</p>
+      
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">AI Persona & Tone</h2>
+      <p class="text-zinc-400 mb-4">You can customize the AI's tone (Formal, Friendly, Aggressive) in your Settings. By default, it uses a professional, helpful assistant persona named "Riya".</p>
+    `,
+  },
+  'integration-zoho': {
+    title: 'Zoho CRM Integration',
+    content: `
+      <p class="text-xl text-zinc-400 leading-relaxed mb-8">
+        Sync qualified leads directly to Zoho CRM to streamline your sales pipeline.
+      </p>
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Prerequisites</h2>
+      <ul class="list-disc list-inside space-y-2 text-zinc-400 mb-4">
+        <li>A Zoho CRM account (Standard edition or higher).</li>
+        <li>Administrator access to generate API grants.</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Setup Steps</h2>
+      <ol class="list-decimal list-inside space-y-4 text-zinc-400">
+        <li>Go to <b>Settings → Integrations</b> in LeadFilter.</li>
+        <li>Click "Connect" on the Zoho CRM card.</li>
+        <li>You will be redirected to Zoho to authorize the application.</li>
+        <li>Click "Accept" to grant LeadFilter permission to create Leads.</li>
+      </ol>
+      <p class="text-zinc-400 mt-8">Once connected, any lead with a "High" or "Medium" qualification score will be automatically pushed to your Zoho "Leads" module.</p>
+    `,
+  },
+  'integration-hubspot': {
+    title: 'HubSpot Integration',
+    content: `
+      <p class="text-xl text-zinc-400 leading-relaxed mb-8">
+        Automatically push hot leads into your HubSpot funnel.
+      </p>
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">One-Click Install</h2>
+      <p class="text-zinc-400 mb-4">HubSpot integration uses OAuth V2 for a secure, one-click connection.</p>
+      
+      <ol class="list-decimal list-inside space-y-4 text-zinc-400">
+        <li>Navigate to <b>Settings → Integrations</b>.</li>
+        <li>Find the HubSpot card and click "Connect".</li>
+        <li>Select your HubSpot portal ID if prompted.</li>
+        <li>Approve the permissions.</li>
+      </ol>
+      <p class="text-zinc-400 mt-8">We map the following fields automatically: First Name, Last Name, Phone, Email, and Lifecycle Stage.</p>
+    `,
+  },
+  'api-auth': {
+    title: 'API Authentication',
+    content: `
+      <p class="text-xl text-zinc-400 leading-relaxed mb-8">
+        Securely access the LeadFilter API.
+      </p>
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">API Keys</h2>
+      <p class="text-zinc-400 mb-4">LeadFilter uses Bearer Token authentication. You must include your API key in the Authorization header of every request.</p>
+      
+      <div class="bg-zinc-950 p-4 rounded-lg border border-white/10 font-mono text-sm text-zinc-300 mt-4 mb-8">
+        Authorization: Bearer lf_live_key_12345...
+      </div>
+
+      <p class="text-zinc-400 mb-4">You can generate and manage your API keys from the <b>Settings → Developer</b> page. Keep your keys secret; never share them in client-side code.</p>
+    `,
+  },
+  'api-webhooks': {
+    title: 'Webhooks',
+    content: `
+      <p class="text-xl text-zinc-400 leading-relaxed mb-8">
+        Listen for real-time events from LeadFilter.
+      </p>
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Events</h2>
+      <p class="text-zinc-400 mb-4">We support the following event types:</p>
+      <ul class="list-disc list-inside space-y-2 text-zinc-400 mb-6">
+        <li><code>lead.created</code>: Fired when a new lead enters the system.</li>
+        <li><code>lead.qualified</code>: Fired when the AI completes qualification.</li>
+        <li><code>lead.disqualified</code>: Fired when a lead is marked as spam or low intent.</li>
+      </ul>
+
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Payload Example</h2>
+      <div class="bg-zinc-950 p-4 rounded-lg border border-white/10 font-mono text-sm text-zinc-300 mt-4 mb-8">
+        <pre>{
+  "event": "lead.qualified",
+  "payload": {
+    "id": "ld_123",
+    "score": 95,
+    "summary": "High intent buyer, budget 5L, wants urgent delivery."
+  },
+  "timestamp": "2024-12-10T10:00:00Z"
 }</pre>
       </div>
     `,

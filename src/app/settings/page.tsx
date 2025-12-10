@@ -20,7 +20,7 @@ const integrations = [
     {
         id: 'whatsapp',
         name: 'WhatsApp Business',
-        description: 'Send automated replies to new leads instantly.',
+        description: 'Managed by LeadFilter. We handle the bot, you just verify your number.',
         status: 'connected',
         connectedAs: '+91 97XXX XXXXX',
         color: 'from-green-500 to-emerald-600',
@@ -97,8 +97,8 @@ export default function SettingsPage() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className={`relative p-6 rounded-2xl border transition-all ${app.status === 'connected'
-                                        ? 'bg-emerald-500/5 border-emerald-500/20'
-                                        : 'glass-card border-white/5 hover:border-white/20'
+                                    ? 'bg-emerald-500/5 border-emerald-500/20'
+                                    : 'glass-card border-white/5 hover:border-white/20'
                                     }`}
                             >
                                 {/* Status Badge */}
@@ -192,40 +192,61 @@ export default function SettingsPage() {
 
                             {/* Modal Body */}
                             <div className="p-6 space-y-6">
-
-                                {/* Visual Guide (Placeholder) */}
-                                <div className="relative aspect-video rounded-xl bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center group">
-                                    <div className="absolute inset-0 bg-zinc-950/50 flex flex-col items-center justify-center text-zinc-500 gap-2">
-                                        <ImageIcon size={32} />
-                                        <span className="text-xs">Visual Guide: Where to find your Key</span>
+                                {selectedIntegration.id === 'whatsapp' ? (
+                                    <div>
+                                        <label className="block text-sm font-medium text-white mb-2">
+                                            Your WhatsApp Number
+                                        </label>
+                                        <p className="text-xs text-zinc-500 mb-3">
+                                            We will use this to send you alerts and for validation. Our AI agent will message leads using our verified business number.
+                                        </p>
+                                        <div className="flex gap-2">
+                                            <div className="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-3 text-zinc-500 flex items-center justify-center">
+                                                +91
+                                            </div>
+                                            <input
+                                                type="tel"
+                                                placeholder="98765 43210"
+                                                className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                                                value={apiKey}
+                                                onChange={(e) => setApiKey(e.target.value)}
+                                            />
+                                        </div>
                                     </div>
-                                    {/* Actual image would go here */}
-                                    {/* <img src={selectedIntegration.guideImage} alt="Guide" className="w-full h-full object-cover" /> */}
+                                ) : (
+                                    <>
+                                        {/* Visual Guide (Placeholder) */}
+                                        <div className="relative aspect-video rounded-xl bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center group">
+                                            <div className="absolute inset-0 bg-zinc-950/50 flex flex-col items-center justify-center text-zinc-500 gap-2">
+                                                <ImageIcon size={32} />
+                                                <span className="text-xs">Visual Guide: Where to find your Key</span>
+                                            </div>
 
-                                    <div className="absolute bottom-3 right-3">
-                                        <button className="text-xs flex items-center gap-1 text-cyan-400 hover:text-cyan-300 bg-zinc-900/80 px-3 py-1.5 rounded-lg border border-cyan-500/20">
-                                            <ExternalLink size={12} /> Open {selectedIntegration.name} Login
-                                        </button>
-                                    </div>
-                                </div>
+                                            <div className="absolute bottom-3 right-3">
+                                                <button className="text-xs flex items-center gap-1 text-cyan-400 hover:text-cyan-300 bg-zinc-900/80 px-3 py-1.5 rounded-lg border border-cyan-500/20">
+                                                    <ExternalLink size={12} /> Open {selectedIntegration.name} Login
+                                                </button>
+                                            </div>
+                                        </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-white mb-2">
-                                        Paste your Key here
-                                    </label>
-                                    <input
-                                        type="text"
-                                        placeholder="Ex: gl_78d6f87..."
-                                        className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                                        value={apiKey}
-                                        onChange={(e) => setApiKey(e.target.value)}
-                                    />
-                                    <p className="text-xs text-zinc-500 mt-2 flex items-start gap-1.5">
-                                        <HelpCircle size={14} className="mt-0.5 shrink-0" />
-                                        Don't worry, this is encrypted and stored securely. We only use it to fetch leads.
-                                    </p>
-                                </div>
-
+                                        <div>
+                                            <label className="block text-sm font-medium text-white mb-2">
+                                                Paste your Key here
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="Ex: gl_78d6f87..."
+                                                className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                                                value={apiKey}
+                                                onChange={(e) => setApiKey(e.target.value)}
+                                            />
+                                            <p className="text-xs text-zinc-500 mt-2 flex items-start gap-1.5">
+                                                <HelpCircle size={14} className="mt-0.5 shrink-0" />
+                                                Don't worry, this is encrypted and stored securely. We only use it to fetch leads.
+                                            </p>
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
                             {/* Modal Footer */}
