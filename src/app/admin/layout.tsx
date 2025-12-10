@@ -10,7 +10,7 @@ export default async function AdminLayout({
     const user = await getCurrentUser();
 
     if (!user) {
-        redirect('/auth/login');
+        redirect('/admin/login');
     }
 
     // Security Check: simple email whitelist
