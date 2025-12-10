@@ -3,7 +3,9 @@
  * Centralized API calls for frontend
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const API_BASE_URL = typeof window !== 'undefined'
+  ? '' // Browser: use relative path to avoid CORS
+  : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'); // Server: use absolute URL
 
 interface ApiResponse<T> {
   success: boolean;
