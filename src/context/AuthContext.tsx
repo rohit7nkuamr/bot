@@ -11,6 +11,14 @@ interface User {
   leads_used: number;
   created_at: string;
   updated_at: string;
+  billing_address?: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    country: string;
+  };
+  gstin?: string;
 }
 
 interface AuthContextType {
