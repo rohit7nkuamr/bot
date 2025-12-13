@@ -7,7 +7,7 @@ import Sidebar from '@/components/dashboard/Sidebar';
 import BillingForm from '@/components/settings/BillingForm';
 import { useIntegrations } from '@/hooks/useIntegrations';
 
-// Static integration config (UI only)
+// Static integration config with guides
 const integrationConfig = [
     {
         id: 'indiamart' as const,
@@ -17,15 +17,29 @@ const integrationConfig = [
         icon: 'IM',
         inputLabel: 'IndiaMART API Key',
         inputPlaceholder: 'Enter your IndiaMART Lead Manager API Key',
+        steps: [
+            'Log in to your IndiaMART Seller Panel',
+            'Go to Settings → Lead Manager → API Access',
+            'Click "Generate API Key" if you don\'t have one',
+            'Copy the API key and paste it below',
+        ],
+        helpLink: 'https://seller.indiamart.com',
     },
     {
         id: 'whatsapp' as const,
         name: 'WhatsApp Business',
-        description: 'Managed by LeadFilter. Enter your WhatsApp Business number.',
+        description: 'Managed by LeadFilter. We handle the bot, you verify your number.',
         color: 'from-green-500 to-emerald-600',
         icon: 'WA',
         inputLabel: 'WhatsApp Phone Number',
         inputPlaceholder: '+91 98765 43210',
+        steps: [
+            'Enter your WhatsApp Business number below',
+            'We will send a verification code to this number',
+            'Our AI bot will use this number to chat with leads',
+            'You can view all conversations in your dashboard',
+        ],
+        helpLink: null,
     },
     {
         id: 'zoho' as const,
@@ -35,6 +49,13 @@ const integrationConfig = [
         icon: 'ZH',
         inputLabel: 'Zoho API Key',
         inputPlaceholder: 'Enter your Zoho CRM API Key',
+        steps: [
+            'Log in to Zoho CRM',
+            'Go to Setup → Developer Space → APIs',
+            'Generate a new API token with "Leads" scope',
+            'Copy the token and paste it below',
+        ],
+        helpLink: 'https://accounts.zoho.com/developerconsole',
     }
 ];
 
@@ -120,8 +141,8 @@ export default function SettingsPage() {
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         className={`glass-card rounded-2xl p-6 border transition-all ${status.connected
-                                                ? 'border-emerald-500/30 bg-emerald-500/5'
-                                                : 'border-white/5 hover:border-white/10'
+                                            ? 'border-emerald-500/30 bg-emerald-500/5'
+                                            : 'border-white/5 hover:border-white/10'
                                             }`}
                                     >
                                         <div className="flex items-start gap-4 mb-4">
@@ -197,15 +218,45 @@ export default function SettingsPage() {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-xl font-semibold text-white">
-                                    Connect {selectedIntegration.name}
-                                </h3>
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${selectedIntegration.color} flex items-center justify-center text-white font-bold text-sm`}>
+                                        {selectedIntegration.icon}
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-white">
+                                        Connect {selectedIntegration.name}
+                                    </h3>
+                                </div>
                                 <button
                                     onClick={() => setSelectedIntegration(null)}
                                     className="text-zinc-400 hover:text-white"
                                 >
                                     <X size={20} />
                                 </button>
+                            </div>
+
+                            {/* Step by Step Guide */}
+                            <div className="mb-6 bg-black/30 rounded-xl p-4 border border-white/5">
+                                <h4 className="text-sm font-medium text-zinc-300 mb-3">How to connect:</h4>
+                                <ol className="space-y-2">
+                                    {'steps' in selectedIntegration && selectedIntegration.steps?.map((step, i) => (
+                                        <li key={i} className="flex items-start gap-3 text-sm text-zinc-400">
+                                            <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
+                                                {i + 1}
+                                            </span>
+                                            <span>{step}</span>
+                                        </li>
+                                    ))}
+                                </ol>
+                                {'helpLink' in selectedIntegration && selectedIntegration.helpLink && (
+                                    <a
+                                        href={selectedIntegration.helpLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mt-3 inline-flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300"
+                                    >
+                                        Open {selectedIntegration.name} dashboard →
+                                    </a>
+                                )}
                             </div>
 
                             <div className="space-y-4">
