@@ -10,9 +10,9 @@ interface SidebarProps {
 
 const navItems = [
     { icon: Home, label: 'Dashboard', href: '/dashboard' },
-    { icon: Users, label: 'Leads', href: '/leads' },
-    { icon: MessageSquare, label: 'Conversations', href: '/conversations' },
-    { icon: BarChart2, label: 'Analytics', href: '/analytics' },
+    { icon: Users, label: 'Leads', href: '/dashboard' }, // TODO: Create separate leads page
+    { icon: MessageSquare, label: 'Conversations', href: '/dashboard' }, // TODO: Create conversations page
+    { icon: BarChart2, label: 'Analytics', href: '/dashboard' }, // TODO: Create analytics page
     { icon: Settings, label: 'Settings', href: '/settings' },
 ];
 
@@ -56,7 +56,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                             return (
                                 <Link
                                     key={item.label}
-                                    href="#"
+                                    href={item.href}
                                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive
                                         ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
                                         : 'text-zinc-400 hover:text-white hover:bg-white/5'
@@ -74,11 +74,21 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                         })}
                     </nav>
 
-                    <div className="pt-6 border-t border-white/5">
-                        <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200">
+                    <div className="pt-6 border-t border-white/5 space-y-2">
+                        <Link
+                            href="/profile"
+                            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all duration-200"
+                        >
+                            <Users className="w-5 h-5" />
+                            <span className="font-medium text-sm">My Profile</span>
+                        </Link>
+                        <Link
+                            href="/profile"
+                            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
+                        >
                             <LogOut className="w-5 h-5" />
                             <span className="font-medium text-sm">Sign Out</span>
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </aside>

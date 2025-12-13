@@ -32,12 +32,12 @@ export default function Dashboard() {
 
   const { stats, leads, loading, error, userPlan } = useDashboardData();
 
-  // Derived Stats for StatsGrid
+  // Derived Stats for StatsGrid - with null safety
   const dashboardStats = [
-    { label: 'Total Leads', value: stats.totalLeads.toString(), change: '+12%', icon: Users, color: 'from-blue-500 to-cyan-500' },
-    { label: 'Qualified', value: stats.qualified.toString(), change: '+23%', icon: CheckCircle, color: 'from-emerald-500 to-teal-500' },
-    { label: 'Conversion Rate', value: stats.conversionRate, change: '+5%', icon: TrendingUp, color: 'from-indigo-500 to-purple-500' },
-    { label: 'Response Time', value: stats.responseTime, change: '-10%', icon: Clock, color: 'from-orange-500 to-red-500' },
+    { label: 'Total Leads', value: String(stats?.totalLeads ?? 0), change: '+12%', icon: Users, color: 'from-blue-500 to-cyan-500' },
+    { label: 'Qualified', value: String(stats?.qualified ?? 0), change: '+23%', icon: CheckCircle, color: 'from-emerald-500 to-teal-500' },
+    { label: 'Conversion Rate', value: stats?.conversionRate ?? '0%', change: '+5%', icon: TrendingUp, color: 'from-indigo-500 to-purple-500' },
+    { label: 'Response Time', value: stats?.responseTime ?? '-', change: '-10%', icon: Clock, color: 'from-orange-500 to-red-500' },
   ];
 
   if (loading) {
