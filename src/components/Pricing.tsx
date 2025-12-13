@@ -87,7 +87,7 @@ export default function Pricing({ setCurrentPage }: PricingProps = {}) {
               </div>
 
               <Link
-                href={plan.price === 'Custom' ? '/contact' : '/signup?plan=' + plan.name.toLowerCase()}
+                href={plan.price === 'Custom' ? 'mailto:enterprise@leadfilter.pro' : '/auth/signup?plan=' + plan.name.toLowerCase()}
                 className={`w-full py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-all ${plan.highlighted
                   ? 'bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20'
                   : 'bg-white/10 hover:bg-white/20 text-white'

@@ -56,7 +56,7 @@ export default function Hero({ setCurrentPage }: HeroProps = {}) {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="flex flex-col sm:flex-row items-center gap-4 mb-20"
         >
-          <Link href="/signup" className="px-8 py-4 bg-white text-black rounded-xl font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+          <Link href="/auth/signup" className="px-8 py-4 bg-white text-black rounded-xl font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
             Get Started <ArrowRight className="w-4 h-4" />
           </Link>
           <Link href="/docs" className="px-8 py-4 bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-xl font-medium hover:bg-zinc-800 transition-colors flex items-center gap-2">

@@ -11,31 +11,31 @@ export default function Footer() {
     {
       title: 'Product',
       links: [
-        { name: 'Features', href: '#' },
-        { name: 'Pricing', href: '/#pricing' },
-        { name: 'Security', href: '#' },
+        { name: 'Features', href: '/#features' },
+        { name: 'Pricing', href: '/pricing' },
+        { name: 'Dashboard', href: '/dashboard' },
       ],
     },
     {
       title: 'Company',
       links: [
-        { name: 'About', href: '#' },
-        { name: 'Blog', href: '#' },
+        { name: 'About', href: '/docs/about' },
+        { name: 'Contact', href: 'mailto:hello@leadfilter.pro' },
       ],
     },
     {
       title: 'Resources',
       links: [
         { name: 'Documentation', href: '/docs' },
-        { name: 'API Reference', href: '/docs/api-leads' },
-        { name: 'Support', href: 'mailto:support@leadfilter.com' },
+        { name: 'Getting Started', href: '/docs/getting-started' },
+        { name: 'Support', href: 'mailto:support@leadfilter.pro' },
       ],
     },
     {
       title: 'Legal',
       links: [
-        { name: 'Privacy Policy', href: '#' },
-        { name: 'Terms of Service', href: '#' },
+        { name: 'Privacy Policy', href: '/docs/privacy' },
+        { name: 'Terms of Service', href: '/docs/terms' },
       ],
     },
   ];

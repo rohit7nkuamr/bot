@@ -71,11 +71,11 @@ export default function Home() {
       <div className="relative z-10 w-full">
         <Navbar />
 
-        {currentPage === 'home' && !isAuthenticated && (
+        {currentPage === 'home' && (
           <>
-            <Hero setCurrentPage={() => setAuthMode('signup')} />
+            <Hero setCurrentPage={() => isAuthenticated ? window.location.href = '/dashboard' : setAuthMode('signup')} />
             <Features />
-            <Pricing setCurrentPage={() => setAuthMode('signup')} />
+            <Pricing setCurrentPage={() => isAuthenticated ? window.location.href = '/dashboard' : setAuthMode('signup')} />
           </>
         )}
 

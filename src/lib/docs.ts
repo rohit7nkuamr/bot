@@ -230,4 +230,80 @@ export const DOCS_CONTENT: Record<string, { title: string; content: string }> = 
       </div>
     `,
   },
+  'privacy': {
+    title: 'Privacy Policy',
+    content: `
+      <p class="text-xl text-zinc-400 leading-relaxed mb-8">
+        Your privacy is important to us. This policy explains how LeadFilter collects, uses, and protects your information.
+      </p>
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Information We Collect</h2>
+      <ul class="list-disc list-inside space-y-2 text-zinc-400 mb-6">
+        <li><b>Account Information:</b> Email address, password (hashed), and billing details.</li>
+        <li><b>Lead Data:</b> Information from your connected sources (IndiaMART, etc.) including customer names, phone numbers, and inquiry details.</li>
+        <li><b>Usage Data:</b> How you interact with our dashboard and features.</li>
+      </ul>
+      
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">How We Use Your Data</h2>
+      <ul class="list-disc list-inside space-y-2 text-zinc-400 mb-6">
+        <li>To provide and improve our AI qualification service.</li>
+        <li>To send WhatsApp messages to your leads on your behalf.</li>
+        <li>To sync qualified leads to your connected CRMs.</li>
+        <li>To send you important service updates and billing information.</li>
+      </ul>
+      
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Data Security</h2>
+      <p class="text-zinc-400 mb-4">We use industry-standard encryption (TLS 1.3) for all data in transit. Your data is stored securely in Supabase with row-level security policies.</p>
+      
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Contact</h2>
+      <p class="text-zinc-400 mb-4">For privacy concerns, email us at <a href="mailto:privacy@leadfilter.pro" class="text-cyan-400 hover:underline">privacy@leadfilter.pro</a></p>
+    `,
+  },
+  'terms': {
+    title: 'Terms of Service',
+    content: `
+      <p class="text-xl text-zinc-400 leading-relaxed mb-8">
+        By using LeadFilter, you agree to these terms. Please read them carefully.
+      </p>
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">1. Service Description</h2>
+      <p class="text-zinc-400 mb-4">LeadFilter is an AI-powered lead qualification platform that integrates with your lead sources and CRM systems.</p>
+      
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">2. Acceptable Use</h2>
+      <ul class="list-disc list-inside space-y-2 text-zinc-400 mb-6">
+        <li>You must have the right to contact the leads you send through our system.</li>
+        <li>You may not use LeadFilter for spam, fraud, or illegal activities.</li>
+        <li>You are responsible for the content of messages sent via our AI agent.</li>
+      </ul>
+      
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">3. Billing</h2>
+      <p class="text-zinc-400 mb-4">Subscription fees are billed monthly. Refunds are available within 7 days of subscription start if no leads have been processed.</p>
+      
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">4. Limitation of Liability</h2>
+      <p class="text-zinc-400 mb-4">LeadFilter is provided "as is". We are not liable for any indirect, incidental, or consequential damages arising from your use of the service.</p>
+      
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">5. Changes to Terms</h2>
+      <p class="text-zinc-400 mb-4">We may update these terms from time to time. We'll notify you of significant changes via email.</p>
+    `,
+  },
+  'about': {
+    title: 'About LeadFilter',
+    content: `
+      <p class="text-xl text-zinc-400 leading-relaxed mb-8">
+        LeadFilter was built to solve a real problem faced by thousands of Indian businesses: wasted time on unqualified leads.
+      </p>
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Our Mission</h2>
+      <p class="text-zinc-400 mb-4">To help SMBs and enterprises focus on high-value buyers by automating the tedious work of initial lead qualification.</p>
+      
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">The Problem We Solve</h2>
+      <p class="text-zinc-400 mb-4">Business owners on platforms like IndiaMART receive hundreds of inquiries daily. Most are price shoppers, spam, or low-intent buyers. Manually filtering these takes hours every day.</p>
+      
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Our Solution</h2>
+      <p class="text-zinc-400 mb-4">LeadFilter's AI agent automatically chats with each new lead via WhatsApp, asking qualifying questions about budget, timeline, and requirements. Only hot leads make it to your sales team.</p>
+      
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Contact Us</h2>
+      <p class="text-zinc-400 mb-4">
+        <b>Email:</b> <a href="mailto:hello@leadfilter.pro" class="text-cyan-400 hover:underline">hello@leadfilter.pro</a><br/>
+        <b>Support:</b> <a href="mailto:support@leadfilter.pro" class="text-cyan-400 hover:underline">support@leadfilter.pro</a>
+      </p>
+    `,
+  },
 };
