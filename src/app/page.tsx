@@ -69,12 +69,7 @@ export default function Home() {
 
       {/* Main content */}
       <div className="relative z-10 w-full">
-        <Navbar
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          isAuthenticated={isAuthenticated}
-          onAuthClick={() => setAuthMode('login')}
-        />
+        <Navbar />
 
         {currentPage === 'home' && !isAuthenticated && (
           <>
