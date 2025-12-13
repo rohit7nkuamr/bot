@@ -20,7 +20,7 @@ export default function Page() {
 
     return (
         <div className="min-h-screen bg-background flex flex-col">
-            <Navbar isAuthenticated={isAuthenticated} />
+            <Navbar />
             <main className="flex-grow flex items-center justify-center">
                 <LoginPage
                     onSuccess={() => router.push('/dashboard')}

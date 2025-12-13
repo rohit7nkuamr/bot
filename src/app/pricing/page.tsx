@@ -8,12 +8,7 @@ export default function PricingPage() {
     return (
         <div className="min-h-screen bg-background">
             {/* Force Navbar to show 'home' state or similar */}
-            <Navbar
-                currentPage="pricing"
-                setCurrentPage={() => { }}
-                isAuthenticated={false}
-                onAuthClick={() => { }}
-            />
+            <Navbar />
             <div className="pt-20">
                 <Pricing setCurrentPage={() => { }} />
             </div>
