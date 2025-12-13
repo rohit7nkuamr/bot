@@ -11,9 +11,9 @@ interface SidebarProps {
 
 const navItems = [
     { icon: Home, label: 'Dashboard', href: '/dashboard' },
-    { icon: Users, label: 'Leads', href: '/dashboard?tab=leads' },
-    { icon: MessageSquare, label: 'Conversations', href: '/dashboard?tab=conversations' },
-    { icon: BarChart2, label: 'Analytics', href: '/dashboard?tab=analytics' },
+    { icon: Users, label: 'Leads', href: '/leads' },
+    { icon: MessageSquare, label: 'Conversations', href: '/dashboard', badge: 'Soon' },
+    { icon: BarChart2, label: 'Analytics', href: '/dashboard', badge: 'Soon' },
     { icon: Settings, label: 'Settings', href: '/settings' },
 ];
 
@@ -76,7 +76,12 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                                 >
                                     <Icon className={`w-5 h-5 ${isActive ? 'text-indigo-400' : 'text-zinc-500 group-hover:text-white'}`} />
                                     <span className="font-medium text-sm">{item.label}</span>
-                                    {item.label === 'Leads' && (
+                                    {'badge' in item && item.badge && (
+                                        <span className="ml-auto bg-zinc-700 text-zinc-400 text-[10px] font-medium px-2 py-0.5 rounded-full">
+                                            {item.badge}
+                                        </span>
+                                    )}
+                                    {item.label === 'Leads' && !('badge' in item) && (
                                         <span className="ml-auto bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-indigo-500/20">
                                             New
                                         </span>

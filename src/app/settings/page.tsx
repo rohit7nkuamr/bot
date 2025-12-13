@@ -2,46 +2,53 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronRight, HelpCircle, X, ExternalLink, Image as ImageIcon } from 'lucide-react';
+import { Check, ChevronRight, X, Menu, Loader2 } from 'lucide-react';
 import Sidebar from '@/components/dashboard/Sidebar';
 import BillingForm from '@/components/settings/BillingForm';
+import { useIntegrations } from '@/hooks/useIntegrations';
 
-// Mock Integration Data
-const integrations = [
+// Static integration config (UI only)
+const integrationConfig = [
     {
-        id: 'indiamart',
+        id: 'indiamart' as const,
         name: 'IndiaMART',
         description: 'Auto-fetch leads from your IndiaMART seller account.',
-        status: 'disconnected',
         color: 'from-red-500 to-orange-500',
         icon: 'IM',
-        guideImage: '/images/indiamart-key-guide.png' // Placeholder
+        inputLabel: 'IndiaMART API Key',
+        inputPlaceholder: 'Enter your IndiaMART Lead Manager API Key',
     },
     {
-        id: 'whatsapp',
+        id: 'whatsapp' as const,
         name: 'WhatsApp Business',
-        description: 'Managed by LeadFilter. We handle the bot, you just verify your number.',
-        status: 'connected',
-        connectedAs: '+91 97XXX XXXXX',
+        description: 'Managed by LeadFilter. Enter your WhatsApp Business number.',
         color: 'from-green-500 to-emerald-600',
-        icon: 'WA'
+        icon: 'WA',
+        inputLabel: 'WhatsApp Phone Number',
+        inputPlaceholder: '+91 98765 43210',
     },
     {
-        id: 'zoho',
+        id: 'zoho' as const,
         name: 'Zoho CRM',
         description: 'Push qualified leads directly to your Zoho pipeline.',
-        status: 'disconnected',
-        color: 'from-blue-500 to-yellow-500',
-        icon: 'ZH'
+        color: 'from-blue-500 to-cyan-500',
+        icon: 'ZH',
+        inputLabel: 'Zoho API Key',
+        inputPlaceholder: 'Enter your Zoho CRM API Key',
     }
 ];
 
+type Platform = 'whatsapp' | 'indiamart' | 'zoho';
+
 export default function SettingsPage() {
-    const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile sidebar state
-    const [selectedIntegration, setSelectedIntegration] = useState<typeof integrations[0] | null>(null);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [selectedIntegration, setSelectedIntegration] = useState<typeof integrationConfig[0] | null>(null);
     const [apiKey, setApiKey] = useState('');
     const [isConnecting, setIsConnecting] = useState(false);
     const [connectionError, setConnectionError] = useState<string | null>(null);
+    const [disconnectingPlatform, setDisconnectingPlatform] = useState<string | null>(null);
+
+    const { integrations, loading, connect, disconnect, refresh } = useIntegrations();
 
     const handleConnect = async () => {
         if (!apiKey || !selectedIntegration) return;
@@ -50,30 +57,29 @@ export default function SettingsPage() {
         setConnectionError(null);
 
         try {
-            const response = await fetch(`/api/integrations/${selectedIntegration.id}`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ apiKey }),
-                }
-            );
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.error || 'Connection failed');
-            }
-
-            // On success, close modal and refresh UI (in a real app, you'd update state)
-            alert('Successfully connected!');
+            await connect(selectedIntegration.id as Platform, apiKey);
             setSelectedIntegration(null);
-            // Here you would refetch the integrations status to update the UI
-
+            setApiKey('');
         } catch (error) {
-            setConnectionError(error instanceof Error ? error.message : 'An unknown error occurred');
+            setConnectionError(error instanceof Error ? error.message : 'Connection failed');
         } finally {
             setIsConnecting(false);
         }
+    };
+
+    const handleDisconnect = async (platform: Platform) => {
+        setDisconnectingPlatform(platform);
+        try {
+            await disconnect(platform);
+        } catch (error) {
+            console.error('Disconnect error:', error);
+        } finally {
+            setDisconnectingPlatform(null);
+        }
+    };
+
+    const getIntegrationStatus = (id: string) => {
+        return integrations[id as Platform] || { connected: false, connectedAs: null };
     };
 
     return (
@@ -84,74 +90,91 @@ export default function SettingsPage() {
                 <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8">
 
                     {/* Header */}
-                    <div>
-                        <h1 className="text-3xl font-bold text-white mb-2">Connect Your Business</h1>
-                        <p className="text-zinc-400">Link your accounts to start automating lead qualification.</p>
-                    </div>
-
-                    {/* Cards Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {integrations.map((app) => (
-                            <motion.div
-                                key={app.id}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className={`relative p-6 rounded-2xl border transition-all ${app.status === 'connected'
-                                    ? 'bg-emerald-500/5 border-emerald-500/20'
-                                    : 'glass-card border-white/5 hover:border-white/20'
-                                    }`}
-                            >
-                                {/* Status Badge */}
-                                <div className="absolute top-4 right-4">
-                                    {app.status === 'connected' ? (
-                                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-medium border border-emerald-500/20">
-                                            <Check size={12} /> Connected
-                                        </span>
-                                    ) : (
-                                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-zinc-800 text-zinc-500 text-xs font-medium border border-white/5">
-                                            Not Linked
-                                        </span>
-                                    )}
-                                </div>
-
-                                <div className="flex items-start gap-4 mb-4">
-                                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${app.color} flex items-center justify-center text-white font-bold text-lg shadow-lg`}>
-                                        {app.icon}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-white">{app.name}</h3>
-                                        <p className="text-sm text-zinc-500 leading-snug max-w-xs">{app.description}</p>
-                                    </div>
-                                </div>
-
-                                {app.status === 'connected' ? (
-                                    <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
-                                        <span className="text-sm text-zinc-400">Linked as <span className="text-white">{app.connectedAs}</span></span>
-                                        <button className="text-xs text-red-400 hover:text-red-300">Disconnect</button>
-                                    </div>
-                                ) : (
-                                    <button
-                                        onClick={() => setSelectedIntegration(app)}
-                                        className="w-full mt-4 py-3 rounded-xl bg-white text-black font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
-                                    >
-                                        Connect Account <ChevronRight size={16} />
-                                    </button>
-                                )}
-                            </motion.div>
-                        ))}
-                    </div>
-
-                    {/* Billing Form */}
-                    <BillingForm />
-
-                    {/* Help / Support */}
-                    <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-900/40 to-cyan-900/40 border border-indigo-500/20 text-center">
-                        <h3 className="font-semibold text-white mb-2">Need help connecting?</h3>
-                        <p className="text-sm text-zinc-400 mb-4">Our support team can help you set this up via a Zoom call.</p>
-                        <button className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors">
-                            Schedule Setup Call
+                    <header className="flex items-center gap-4">
+                        <button
+                            onClick={() => setSidebarOpen(true)}
+                            className="lg:hidden p-2 text-zinc-400 hover:text-white bg-white/5 rounded-lg"
+                        >
+                            <Menu size={20} />
                         </button>
-                    </div>
+                        <div>
+                            <h1 className="text-2xl md:text-3xl font-bold text-white">Settings</h1>
+                            <p className="text-zinc-500 mt-1">Manage integrations and billing</p>
+                        </div>
+                    </header>
+
+                    {/* Integrations Section */}
+                    <section>
+                        <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+                            Integrations
+                            {loading && <Loader2 className="w-4 h-4 animate-spin text-zinc-500" />}
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {integrationConfig.map((app) => {
+                                const status = getIntegrationStatus(app.id);
+                                const isDisconnecting = disconnectingPlatform === app.id;
+
+                                return (
+                                    <motion.div
+                                        key={app.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className={`glass-card rounded-2xl p-6 border transition-all ${status.connected
+                                                ? 'border-emerald-500/30 bg-emerald-500/5'
+                                                : 'border-white/5 hover:border-white/10'
+                                            }`}
+                                    >
+                                        <div className="flex items-start gap-4 mb-4">
+                                            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${app.color} flex items-center justify-center text-white font-bold text-sm shadow-lg`}>
+                                                {app.icon}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2">
+                                                    <h3 className="text-lg font-semibold text-white">{app.name}</h3>
+                                                    {status.connected && (
+                                                        <span className="flex items-center gap-1 text-xs text-emerald-400">
+                                                            <Check size={12} />
+                                                            Connected
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="text-sm text-zinc-500 leading-snug">{app.description}</p>
+                                            </div>
+                                        </div>
+
+                                        {status.connected ? (
+                                            <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                                                <span className="text-sm text-zinc-400">
+                                                    {status.connectedAs || 'Connected'}
+                                                </span>
+                                                <button
+                                                    onClick={() => handleDisconnect(app.id as Platform)}
+                                                    disabled={isDisconnecting}
+                                                    className="text-xs text-red-400 hover:text-red-300 disabled:opacity-50 flex items-center gap-1"
+                                                >
+                                                    {isDisconnecting && <Loader2 size={12} className="animate-spin" />}
+                                                    Disconnect
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => setSelectedIntegration(app)}
+                                                className="w-full mt-2 py-3 rounded-xl bg-white text-black font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
+                                            >
+                                                Connect Account <ChevronRight size={16} />
+                                            </button>
+                                        )}
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+                    </section>
+
+                    {/* Billing Section */}
+                    <section>
+                        <h2 className="text-xl font-semibold text-white mb-6">Billing & Subscription</h2>
+                        <BillingForm />
+                    </section>
 
                 </div>
             </main>
@@ -163,114 +186,66 @@ export default function SettingsPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => setSelectedIntegration(null)}
                     >
                         <motion.div
-                            initial={{ scale: 0.95, y: 20 }}
-                            animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.95, y: 20 }}
-                            className="w-full max-w-lg bg-[#0A0A0A] border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="bg-zinc-900 rounded-2xl border border-white/10 p-6 max-w-md w-full"
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            {/* Modal Header */}
-                            <div className="p-6 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/50">
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${selectedIntegration.color} flex items-center justify-center text-white font-bold`}>
-                                        {selectedIntegration.icon}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-white">Connect {selectedIntegration.name}</h3>
-                                        <p className="text-xs text-zinc-400">Step 1 of 2</p>
-                                    </div>
-                                </div>
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-xl font-semibold text-white">
+                                    Connect {selectedIntegration.name}
+                                </h3>
                                 <button
                                     onClick={() => setSelectedIntegration(null)}
-                                    className="p-2 bg-white/5 rounded-full text-zinc-400 hover:text-white"
+                                    className="text-zinc-400 hover:text-white"
                                 >
                                     <X size={20} />
                                 </button>
                             </div>
 
-                            {/* Modal Body */}
-                            <div className="p-6 space-y-6">
-                                {selectedIntegration.id === 'whatsapp' ? (
-                                    <div>
-                                        <label className="block text-sm font-medium text-white mb-2">
-                                            Your WhatsApp Number
-                                        </label>
-                                        <p className="text-xs text-zinc-500 mb-3">
-                                            We will use this to send you alerts and for validation. Our AI agent will message leads using our verified business number.
-                                        </p>
-                                        <div className="flex gap-2">
-                                            <div className="bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-3 text-zinc-500 flex items-center justify-center">
-                                                +91
-                                            </div>
-                                            <input
-                                                type="tel"
-                                                placeholder="98765 43210"
-                                                className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                                                value={apiKey}
-                                                onChange={(e) => setApiKey(e.target.value)}
-                                            />
-                                        </div>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-zinc-400 mb-2">
+                                        {selectedIntegration.inputLabel}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={apiKey}
+                                        onChange={(e) => setApiKey(e.target.value)}
+                                        placeholder={selectedIntegration.inputPlaceholder}
+                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-500/50"
+                                    />
+                                </div>
+
+                                {connectionError && (
+                                    <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                                        {connectionError}
                                     </div>
-                                ) : (
-                                    <>
-                                        {/* Visual Guide (Placeholder) */}
-                                        <div className="relative aspect-video rounded-xl bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center group">
-                                            <div className="absolute inset-0 bg-zinc-950/50 flex flex-col items-center justify-center text-zinc-500 gap-2">
-                                                <ImageIcon size={32} />
-                                                <span className="text-xs">Visual Guide: Where to find your Key</span>
-                                            </div>
-
-                                            <div className="absolute bottom-3 right-3">
-                                                <button className="text-xs flex items-center gap-1 text-cyan-400 hover:text-cyan-300 bg-zinc-900/80 px-3 py-1.5 rounded-lg border border-cyan-500/20">
-                                                    <ExternalLink size={12} /> Open {selectedIntegration.name} Login
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-white mb-2">
-                                                Paste your Key here
-                                            </label>
-                                            <input
-                                                type="text"
-                                                placeholder="Ex: gl_78d6f87..."
-                                                className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-500/50 transition-colors"
-                                                value={apiKey}
-                                                onChange={(e) => setApiKey(e.target.value)}
-                                            />
-                                            <p className="text-xs text-zinc-500 mt-2 flex items-start gap-1.5">
-                                                <HelpCircle size={14} className="mt-0.5 shrink-0" />
-                                                Don't worry, this is encrypted and stored securely. We only use it to fetch leads.
-                                            </p>
-                                        </div>
-                                    </>
                                 )}
-                            </div>
 
-                            {/* Modal Footer */}
-                            <div className="p-6 border-t border-zinc-800 bg-zinc-900/30 flex justify-end gap-3">
-                                <button
-                                    onClick={() => setSelectedIntegration(null)}
-                                    className="px-5 py-2.5 rounded-xl font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
-                                >
-                                    Cancel
-                                </button>
                                 <button
                                     onClick={handleConnect}
-                                    disabled={isConnecting}
-                                    className="px-6 py-2.5 rounded-xl font-bold bg-white text-black hover:bg-zinc-200 transition-colors shadow-lg shadow-white/5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                                    disabled={!apiKey || isConnecting}
+                                    className="w-full py-3 bg-gradient-to-r from-cyan-500 to-indigo-500 text-white font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {isConnecting ? (
                                         <>
-                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
+                                            <Loader2 size={16} className="animate-spin" />
                                             Connecting...
                                         </>
-                                    ) : 'Verify & Connect'}
+                                    ) : (
+                                        <>
+                                            <Check size={16} />
+                                            Connect {selectedIntegration.name}
+                                        </>
+                                    )}
                                 </button>
                             </div>
-
                         </motion.div>
                     </motion.div>
                 )}

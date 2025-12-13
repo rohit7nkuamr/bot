@@ -1,6 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import { getUserLeads, createLead, getLeadStats } from '@/lib/leads';
-import { getCurrentSession, hasReachedLeadLimit, incrementLeadsUsed } from '@/lib/auth';
+import { hasReachedLeadLimit, incrementLeadsUsed } from '@/lib/auth';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+/**
+ * Helper to get user from Authorization header
+ */
+async function getUserFromRequest(request: NextRequest) {
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return null;
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  // Use service role client to verify token
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+
+  if (error || !user) {
+    console.error('Auth error:', error);
+    return null;
+  }
+
+  return user;
+}
 
 /**
  * Leads API Routes
@@ -10,16 +38,17 @@ import { getCurrentSession, hasReachedLeadLimit, incrementLeadsUsed } from '@/li
 
 export async function GET(request: NextRequest) {
   try {
-    // Get current user session
-    const session = await getCurrentSession();
-    if (!session?.user) {
+    // Get user from Authorization header
+    const user = await getUserFromRequest(request);
+
+    if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized', message: 'Please login to view leads' },
         { status: 401 }
       );
     }
 
-    const userId = session.user.id;
+    const userId = user.id;
 
     // Get query params
     const searchParams = request.nextUrl.searchParams;
@@ -57,16 +86,17 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Get current user session
-    const session = await getCurrentSession();
-    if (!session?.user) {
+    // Get user from Authorization header
+    const user = await getUserFromRequest(request);
+
+    if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    const userId = session.user.id;
+    const userId = user.id;
     const body = await request.json();
     const { phone, name, budget, raw_data } = body;
 

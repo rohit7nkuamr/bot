@@ -55,7 +55,7 @@ export default function Dashboard() {
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
       {/* Main Content */}
-      <main className={`flex-1 overflow-y-auto transition-all duration-300 relative lg:ml-0`}>
+      <main className={`flex-1 overflow-y-auto transition-all duration-300 relative lg:ml-64`}>
         <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8 max-w-[1600px] mx-auto">
 
           {/* Header */}
@@ -123,7 +123,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
-              <MetricCharts />
+              <MetricCharts stats={stats} leads={leads} />
             </div>
 
             {/* Recent Activity / Integration Status */}
@@ -137,10 +137,10 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">WhatsApp API</p>
-                      <p className="text-xs text-zinc-500">Connected • +91 97...</p>
+                      <p className="text-xs text-zinc-500">Not Connected</p>
                     </div>
                   </div>
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]"></span>
+                  <Link href="/settings" className="text-xs text-cyan-400 hover:text-cyan-300">Connect</Link>
                 </div>
 
                 <div className={`flex items-center justify-between p-4 rounded-xl border border-white/5 ${userPlan === 'starter' ? 'bg-zinc-900/50 opacity-60' : 'bg-white/5'
