@@ -44,7 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar isAuthenticated={false} />
+      <Navbar />
 
       <div className="pt-24 max-w-7xl mx-auto px-6 flex flex-col md:flex-row gap-8">
         <aside className="w-full md:w-64 flex-shrink-0 hidden md:block">
