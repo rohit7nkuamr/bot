@@ -1,12 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { createClient } from '@supabase/supabase-js';
-
-// Create Supabase client for getting session
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 export interface DashboardStats {
     totalLeads: number;
