@@ -1,20 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { Mail, ArrowRight, Loader2, CheckCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
-// Client-side Supabase
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { useAuth } from '@/context/AuthContext';
+import { Mail, Lock, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 
 export default function AdminLoginPage() {
+    const router = useRouter();
+    const { login } = useAuth();
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [sent, setSent] = useState(false);
     const [error, setError] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -23,53 +20,31 @@ export default function AdminLoginPage() {
         setError('');
 
         try {
-            // Send magic link
-            const { error: authError } = await supabase.auth.signInWithOtp({
-                email,
-                options: {
-                    emailRedirectTo: `${window.location.origin}/auth/callback?next=/admin`,
-                },
-            });
+            // Login with password
+            await login(email, password);
 
-            if (authError) throw authError;
-
-            setSent(true);
+            // After successful login, redirect to admin
+            // The admin layout will check if email is in ADMIN_EMAILS
+            router.push('/admin');
         } catch (err: any) {
-            setError(err?.message || 'Failed to send login link. Please try again.');
+            setError(err?.message || 'Login failed. Please check your credentials.');
         } finally {
             setLoading(false);
         }
     };
-
-    if (sent) {
-        return (
-            <div className="min-h-screen bg-black flex items-center justify-center p-4">
-                <div className="w-full max-w-md text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
-                        <CheckCircle className="text-emerald-400" size={32} />
-                    </div>
-                    <h1 className="text-2xl font-bold text-white mb-2">Check Your Inbox</h1>
-                    <p className="text-zinc-400 mb-6">
-                        We sent a login link to <span className="text-white font-medium">{email}</span>.
-                        Click the link in the email to access the Admin Panel.
-                    </p>
-                    <p className="text-xs text-zinc-600">
-                        Didn't receive it? Check spam or <button onClick={() => setSent(false)} className="text-cyan-400 hover:underline">try again</button>.
-                    </p>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="min-h-screen bg-black flex items-center justify-center p-4">
             <div className="w-full max-w-md">
                 {/* Logo */}
                 <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-orange-500 mb-4">
+                        <ShieldCheck className="text-white" size={32} />
+                    </div>
                     <h1 className="text-2xl font-bold bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
                         Admin Access
                     </h1>
-                    <p className="text-zinc-500 mt-2">Enter your admin email to receive a login link</p>
+                    <p className="text-zinc-500 mt-2">Sign in with your admin credentials</p>
                 </div>
 
                 {/* Form Card */}
@@ -94,9 +69,21 @@ export default function AdminLoginPage() {
                                     required
                                 />
                             </div>
-                            <p className="text-xs text-zinc-600 mt-2">
-                                Only emails in the authorized admin list can access this panel.
-                            </p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-zinc-400 mb-2">Password</label>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-3 text-zinc-500" size={18} />
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    className="w-full bg-black border border-zinc-700 rounded-xl pl-10 pr-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-orange-500/50 transition-colors"
+                                    required
+                                />
+                            </div>
                         </div>
 
                         <button
@@ -108,11 +95,17 @@ export default function AdminLoginPage() {
                                 <Loader2 className="animate-spin" size={20} />
                             ) : (
                                 <>
-                                    Send Login Link <ArrowRight size={18} />
+                                    Sign In <ArrowRight size={18} />
                                 </>
                             )}
                         </button>
                     </form>
+
+                    <div className="mt-6 pt-6 border-t border-zinc-800">
+                        <p className="text-center text-xs text-zinc-600">
+                            Only authorized admin emails can access the admin panel.
+                        </p>
+                    </div>
 
                     <p className="mt-6 text-center text-sm text-zinc-500">
                         <Link href="/" className="text-zinc-400 hover:text-white">
