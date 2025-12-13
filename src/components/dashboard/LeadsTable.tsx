@@ -86,13 +86,13 @@ export default function LeadsTable({ leads = [] }: LeadsTableProps) {
                                     {lead.platform || lead.business || 'Direct'}
                                 </td>
                                 <td className="table-cell">
-                                    <span className={`px-2 py-1 rounded-md text-xs font-medium border ${lead.status === 'qualified'
-                                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                            : lead.status === 'pending'
-                                                ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                                                : 'bg-red-500/10 text-red-400 border-red-500/20'
+                                    <span className={`px-2 py-1 rounded-md text-xs font-medium border ${(lead.status || 'pending') === 'qualified'
+                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                        : (lead.status || 'pending') === 'pending'
+                                            ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                                            : 'bg-red-500/10 text-red-400 border-red-500/20'
                                         }`}>
-                                        {lead.status.charAt(0).toUpperCase() + lead.status.slice(1)}
+                                        {(lead.status || 'pending').charAt(0).toUpperCase() + (lead.status || 'pending').slice(1)}
                                     </span>
                                 </td>
                                 <td className="table-cell font-medium text-white">

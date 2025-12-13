@@ -36,7 +36,13 @@ export default function SignupPage() {
             await signup(email, password);
             router.push('/dashboard');
         } catch (err: any) {
-            setError(err?.message || 'Signup failed. Please try again.');
+            const message = err?.message || 'Signup failed. Please try again.';
+            // Handle duplicate email error with a friendly message
+            if (message.toLowerCase().includes('duplicate') || message.toLowerCase().includes('already')) {
+                setError('This email is already registered. Please login instead.');
+            } else {
+                setError(message);
+            }
         } finally {
             setLoading(false);
         }
