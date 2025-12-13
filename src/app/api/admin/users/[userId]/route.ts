@@ -9,8 +9,10 @@ const supabase = createClient(
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { userId: string } }
+    { params }: { params: Promise<{ userId: string }> }
 ) {
+    const { userId } = await params;
+
     try {
         const session = await getCurrentSession();
 
@@ -28,7 +30,7 @@ export async function GET(
         const { data: user, error } = await supabase
             .from('users')
             .select('*')
-            .eq('id', params.userId)
+            .eq('id', userId)
             .single();
 
         if (error) throw error;

@@ -9,8 +9,10 @@ const supabase = createClient(
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: { userId: string } }
+    { params }: { params: Promise<{ userId: string }> }
 ) {
+    const { userId } = await params;
+
     try {
         const session = await getCurrentSession();
 
@@ -46,7 +48,7 @@ export async function POST(
                 monthly_lead_limit: planLimits[plan as keyof typeof planLimits],
                 updated_at: new Date().toISOString(),
             })
-            .eq('id', params.userId);
+            .eq('id', userId);
 
         if (error) throw error;
 
