@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronRight, X, Menu, Loader2 } from 'lucide-react';
+import { Check, ChevronRight, X, Menu, Loader2, ArrowLeft } from 'lucide-react';
 import Sidebar from '@/components/dashboard/Sidebar';
 import BillingForm from '@/components/settings/BillingForm';
 import { useIntegrations } from '@/hooks/useIntegrations';
+import { useAuth } from '@/context/AuthContext';
 
 // Static integration config with guides
 const integrationConfig = [
@@ -69,10 +70,98 @@ export default function SettingsPage() {
     const [connectionError, setConnectionError] = useState<string | null>(null);
     const [disconnectingPlatform, setDisconnectingPlatform] = useState<string | null>(null);
 
+    // OTP Flow States
+    const [otpStep, setOtpStep] = useState<'phone' | 'verify'>('phone');
+    const [otpCode, setOtpCode] = useState('');
+    const [otpSending, setOtpSending] = useState(false);
+    const [otpVerifying, setOtpVerifying] = useState(false);
+    const [otpPhoneNumber, setOtpPhoneNumber] = useState('');
+
     const { integrations, loading, connect, disconnect, refresh } = useIntegrations();
+    const { session } = useAuth();
+
+    // Send OTP for WhatsApp
+    const handleSendOtp = async () => {
+        if (!apiKey || !session?.access_token) return;
+
+        setOtpSending(true);
+        setConnectionError(null);
+
+        try {
+            const response = await fetch('/api/integrations/whatsapp/send-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({ phoneNumber: apiKey }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to send OTP');
+            }
+
+            setOtpPhoneNumber(data.phoneNumber);
+            setOtpStep('verify');
+        } catch (error) {
+            setConnectionError(error instanceof Error ? error.message : 'Failed to send OTP');
+        } finally {
+            setOtpSending(false);
+        }
+    };
+
+    // Verify OTP for WhatsApp
+    const handleVerifyOtp = async () => {
+        if (!otpCode || !session?.access_token) return;
+
+        setOtpVerifying(true);
+        setConnectionError(null);
+
+        try {
+            const response = await fetch('/api/integrations/whatsapp/verify-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({ otp: otpCode }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Verification failed');
+            }
+
+            // Success! Close modal and refresh
+            setSelectedIntegration(null);
+            resetOtpFlow();
+            refresh();
+        } catch (error) {
+            setConnectionError(error instanceof Error ? error.message : 'Verification failed');
+        } finally {
+            setOtpVerifying(false);
+        }
+    };
+
+    const resetOtpFlow = () => {
+        setOtpStep('phone');
+        setOtpCode('');
+        setApiKey('');
+        setOtpPhoneNumber('');
+        setConnectionError(null);
+    };
 
     const handleConnect = async () => {
         if (!apiKey || !selectedIntegration) return;
+
+        // For WhatsApp, use OTP flow
+        if (selectedIntegration.id === 'whatsapp') {
+            await handleSendOtp();
+            return;
+        }
 
         setIsConnecting(true);
         setConnectionError(null);
@@ -259,44 +348,105 @@ export default function SettingsPage() {
                                 )}
                             </div>
 
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-zinc-400 mb-2">
-                                        {selectedIntegration.inputLabel}
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={apiKey}
-                                        onChange={(e) => setApiKey(e.target.value)}
-                                        placeholder={selectedIntegration.inputPlaceholder}
-                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-500/50"
-                                    />
-                                </div>
-
-                                {connectionError && (
-                                    <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-                                        {connectionError}
+                            {/* WhatsApp OTP Verify Step */}
+                            {selectedIntegration.id === 'whatsapp' && otpStep === 'verify' ? (
+                                <div className="space-y-4">
+                                    <div className="text-center mb-4">
+                                        <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-green-500/20 flex items-center justify-center">
+                                            <Check className="w-6 h-6 text-green-400" />
+                                        </div>
+                                        <p className="text-sm text-zinc-400">
+                                            OTP sent to <span className="text-white font-medium">{otpPhoneNumber}</span>
+                                        </p>
                                     </div>
-                                )}
 
-                                <button
-                                    onClick={handleConnect}
-                                    disabled={!apiKey || isConnecting}
-                                    className="w-full py-3 bg-gradient-to-r from-cyan-500 to-indigo-500 text-white font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
-                                >
-                                    {isConnecting ? (
-                                        <>
-                                            <Loader2 size={16} className="animate-spin" />
-                                            Connecting...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Check size={16} />
-                                            Connect {selectedIntegration.name}
-                                        </>
+                                    <div>
+                                        <label className="block text-sm font-medium text-zinc-400 mb-2">
+                                            Enter 6-digit OTP
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={otpCode}
+                                            onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                            placeholder="123456"
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white text-center text-2xl tracking-widest placeholder-zinc-600 focus:outline-none focus:border-cyan-500/50"
+                                            maxLength={6}
+                                        />
+                                    </div>
+
+                                    {connectionError && (
+                                        <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                                            {connectionError}
+                                        </div>
                                     )}
-                                </button>
-                            </div>
+
+                                    <button
+                                        onClick={handleVerifyOtp}
+                                        disabled={otpCode.length !== 6 || otpVerifying}
+                                        className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {otpVerifying ? (
+                                            <>
+                                                <Loader2 size={16} className="animate-spin" />
+                                                Verifying...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Check size={16} />
+                                                Verify OTP
+                                            </>
+                                        )}
+                                    </button>
+
+                                    <button
+                                        onClick={resetOtpFlow}
+                                        className="w-full py-2 text-zinc-400 hover:text-white text-sm flex items-center justify-center gap-2"
+                                    >
+                                        <ArrowLeft size={14} />
+                                        Use different number
+                                    </button>
+                                </div>
+                            ) : (
+                                /* Default: Enter phone/API key */
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-zinc-400 mb-2">
+                                            {selectedIntegration.inputLabel}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={apiKey}
+                                            onChange={(e) => setApiKey(e.target.value)}
+                                            placeholder={selectedIntegration.inputPlaceholder}
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-500/50"
+                                        />
+                                    </div>
+
+                                    {connectionError && (
+                                        <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                                            {connectionError}
+                                        </div>
+                                    )}
+
+                                    <button
+                                        onClick={handleConnect}
+                                        disabled={!apiKey || isConnecting || otpSending}
+                                        className="w-full py-3 bg-gradient-to-r from-cyan-500 to-indigo-500 text-white font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {(isConnecting || otpSending) ? (
+                                            <>
+                                                <Loader2 size={16} className="animate-spin" />
+                                                {selectedIntegration.id === 'whatsapp' ? 'Sending OTP...' : 'Connecting...'}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Check size={16} />
+                                                {selectedIntegration.id === 'whatsapp' ? 'Send OTP' : `Connect ${selectedIntegration.name}`}
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
                         </motion.div>
                     </motion.div>
                 )}

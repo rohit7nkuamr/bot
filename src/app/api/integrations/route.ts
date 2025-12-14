@@ -87,7 +87,30 @@ export async function POST(request: NextRequest) {
 
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-        // Upsert integration
+        // First ensure user exists in users table (required for foreign key)
+        const { data: existingUser } = await supabase
+            .from('users')
+            .select('id')
+            .eq('id', user.id)
+            .single();
+
+        if (!existingUser) {
+            // Create user record if doesn't exist
+            const { error: userError } = await supabase
+                .from('users')
+                .insert({
+                    id: user.id,
+                    email: user.email,
+                    subscription_plan: 'starter',
+                });
+
+            if (userError) {
+                console.error('Error creating user:', userError);
+                // Continue anyway - user might already exist
+            }
+        }
+
+        // Now upsert integration
         const { error } = await supabase
             .from('user_integrations')
             .upsert({
@@ -98,12 +121,17 @@ export async function POST(request: NextRequest) {
                 connected_at: new Date().toISOString(),
             }, { onConflict: 'user_id,platform' });
 
-        if (error) throw error;
+        if (error) {
+            console.error('Integration insert error:', error);
+            return NextResponse.json({ error: error.message || 'Database error' }, { status: 500 });
+        }
 
         return NextResponse.json({ success: true, message: `${platform} connected successfully` });
     } catch (error) {
         console.error('Connect integration error:', error);
-        return NextResponse.json({ error: 'Failed to connect integration' }, { status: 500 });
+        return NextResponse.json({
+            error: error instanceof Error ? error.message : 'Failed to connect integration'
+        }, { status: 500 });
     }
 }
 

@@ -1,36 +1,66 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import { generateAIResponse } from '@/lib/ai';
 import { sendWhatsAppMessage } from '@/lib/whatsapp';
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
 export async function POST(request: Request) {
   try {
-    // 1. Parse content
-    // content-type: application/x-www-form-urlencoded usually for Twilio
+    // 1. Parse content (Twilio sends form data)
     const formData = await request.formData();
     const From = formData.get('From') as string; // whatsapp:+91...
     const Body = formData.get('Body') as string; // User's message
-    const ProfileName = formData.get('ProfileName');
+    const ProfileName = formData.get('ProfileName') as string;
 
     if (!From || !Body) {
       return NextResponse.json({ error: 'Invalid Payload' }, { status: 400 });
     }
 
-    console.log(`Received message from ${From}: ${Body}`);
+    // Extract phone number without whatsapp: prefix
+    const customerPhone = From.replace('whatsapp:', '');
+    console.log(`Received message from ${customerPhone}: ${Body}`);
 
-    // 2. Fetch Chat History (Mock logic for now - in real app query Supabase 'conversations')
-    // const history = await supabase.from('messages').select(...).eq('user', From)...
-    const mockHistory: any[] = [
-      { role: 'user', content: Body }
-    ];
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // 3. Generate AI Reply
-    const aiReply = await generateAIResponse(mockHistory);
+    // 2. Store incoming message
+    await supabase.from('conversations').insert({
+      customer_phone: customerPhone,
+      customer_name: ProfileName || null,
+      role: 'user',
+      content: Body,
+    });
 
-    // 4. Send Reply via Twilio
+    // 3. Fetch last 10 messages for context
+    const { data: history } = await supabase
+      .from('conversations')
+      .select('role, content')
+      .eq('customer_phone', customerPhone)
+      .order('created_at', { ascending: true })
+      .limit(10);
+
+    // Format history for OpenAI
+    const chatHistory = (history || []).map((msg: any) => ({
+      role: msg.role as 'user' | 'assistant',
+      content: msg.content,
+    }));
+
+    // 4. Generate AI Reply with full context
+    const aiReply = await generateAIResponse(chatHistory);
+
+    // 5. Store AI response
+    await supabase.from('conversations').insert({
+      customer_phone: customerPhone,
+      customer_name: ProfileName || null,
+      role: 'assistant',
+      content: aiReply,
+    });
+
+    // 6. Send Reply via Twilio
     await sendWhatsAppMessage(From, aiReply);
 
-    // 5. Respond to Twilio (TwiML or just 200 OK)
-    // Twilio prefers TwiML but for just ACK, 200 OK XML is fine or even empty
+    // 7. Respond to Twilio (TwiML empty response)
     return new NextResponse('<Response></Response>', {
       headers: { 'Content-Type': 'text/xml' },
     });
@@ -40,3 +70,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
