@@ -16,16 +16,11 @@ export default function Home() {
   const [authMode, setAuthMode] = useState<'login' | 'signup' | null>(null);
   const { isAuthenticated, loading } = useAuth();
 
-  // Show loading state
-  if (loading) {
-    return (
-      <div className="relative w-screen min-h-screen overflow-x-hidden flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
-  }
+  // NOTE: We intentionally do NOT show a loading spinner here
+  // Landing page should load immediately for better UX
+  // Auth state will resolve in background
 
-  // Show auth pages if not authenticated and auth mode is set
+  // Show auth pages if auth mode is set (and not authenticated)
   if (!isAuthenticated && authMode) {
     return (
       <div className="min-h-screen w-full bg-[#050505] text-white overflow-x-hidden relative flex items-center justify-center">
