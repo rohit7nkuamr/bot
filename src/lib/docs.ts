@@ -3,15 +3,15 @@ export const DOCS_CONTENT: Record<string, { title: string; content: string }> = 
     title: 'Introduction to LeadFilter',
     content: `
       <p class="text-xl text-zinc-400 leading-relaxed mb-8">
-        LeadFilter is an intelligent AI agent that sits between your lead sources (like WhatsApp and IndiaMART) and your CRM. It autonomously chats with new leads to qualify their intent, budget, and timeline before handing them off to your sales team, saving you hours every day.
+        LeadFilter is your AI-powered WhatsApp assistant built specifically for IndiaMART sellers. It automatically qualifies leads 24/7, so you only spend time on serious buyers.
       </p>
       <h2 class="text-2xl font-bold text-white mt-12 mb-4">How It Works</h2>
       <ol class="list-decimal list-inside space-y-4 text-zinc-400">
-        <li><b>Connect Your Sources:</b> Link your WhatsApp Business and IndiaMART accounts in the settings page.</li>
-        <li><b>Leads Arrive:</b> When a new lead comes in, it's instantly sent to your LeadFilter agent.</li>
-        <li><b>AI Conversation:</b> The AI starts a natural, human-like conversation via WhatsApp to ask qualifying questions.</li>
-        <li><b>Real-time Dashboard:</b> You see the lead, the conversation, and the AI's qualification score on your live dashboard.</li>
-        <li><b>Focus on Hot Leads:</b> Your sales team spends time only on the leads that are ready to buy.</li>
+        <li><b>Connect IndiaMART:</b> Link your seller account using the API key from your Lead Manager.</li>
+        <li><b>Leads Auto-Sync:</b> New leads are instantly sent to your AI assistant "Riya".</li>
+        <li><b>AI Qualification:</b> Riya asks about budget, timeline, and requirements via WhatsApp.</li>
+        <li><b>Lead Scoring:</b> Leads are scored as Hot/Warm/Cold based on their responses.</li>
+        <li><b>Focus on Closings:</b> You only talk to qualified leads ready to buy.</li>
       </ol>
     `,
   },
@@ -33,16 +33,33 @@ export const DOCS_CONTENT: Record<string, { title: string; content: string }> = 
     `,
   },
   'ai-qualification': {
-    title: 'AI Qualification',
+    title: 'AI Qualification - Meet Riya',
     content: `
       <p class="text-xl text-zinc-400 leading-relaxed mb-8">
-        Our AI is designed to be a smart, efficient sales development representative. It uses different models based on your subscription plan to provide the best balance of speed, cost, and accuracy.
+        Meet <b class="text-cyan-400">Riya</b> - your AI sales agent. She's powered by GPT-4o-mini and trained specifically for Indian B2B conversations. Riya qualifies leads by understanding context, not just keywords.
       </p>
-      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Starter Plan: Basic Qualification</h2>
-      <p class="text-zinc-400 mb-4">Users on the Starter plan benefit from our fastest and most cost-effective model, <b>GPT-4o-mini</b>. It's designed to quickly extract key information like name, budget, and basic requirements.</p>
+      <div class="bg-zinc-900/50 border border-cyan-500/20 rounded-xl p-6 my-8">
+        <h3 class="text-lg font-bold text-white mb-4">🤖 Riya's Capabilities</h3>
+        <ul class="space-y-3 text-zinc-400">
+          <li class="flex items-start gap-2"><span class="text-cyan-400">✓</span> Responds in <b>under 2 seconds</b></li>
+          <li class="flex items-start gap-2"><span class="text-cyan-400">✓</span> Remembers conversation context</li>
+          <li class="flex items-start gap-2"><span class="text-cyan-400">✓</span> Asks qualifying questions (budget, timeline, quantity)</li>
+          <li class="flex items-start gap-2"><span class="text-cyan-400">✓</span> Scores leads as <b>Hot</b>/<b>Warm</b>/<b>Cold</b></li>
+          <li class="flex items-start gap-2"><span class="text-cyan-400">✓</span> Natural Hindi/English conversation</li>
+          <li class="flex items-start gap-2"><span class="text-cyan-400">✓</span> Works 24/7 - never misses a lead</li>
+        </ul>
+      </div>
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Cost Per Conversation</h2>
+      <p class="text-zinc-400 mb-4">Using OpenAI's GPT-4o-mini, each AI conversation costs approximately <b class="text-white">₹0.20</b>. WhatsApp service conversations (when customer initiates) are <b class="text-green-400">FREE</b>.</p>
       
-      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Business & Enterprise Plans: Advanced Intent Analysis</h2>
-      <p class="text-zinc-400 mb-4">Users on our premium plans get access to our most powerful model, <b>GPT-4-turbo</b>. This model goes beyond simple data extraction. It performs a deep analysis of the lead's language to infer sentiment, purchase intent, and urgency, providing a much more accurate qualification score.</p>
+      <h2 class="text-2xl font-bold text-white mt-12 mb-4">Lead Scoring Logic</h2>
+      <p class="text-zinc-400 mb-4">Riya analyzes responses for:</p>
+      <ul class="list-disc list-inside space-y-2 text-zinc-400">
+        <li><b>Budget signals:</b> Mentions of price ranges, quantities</li>
+        <li><b>Timeline:</b> "Urgent", "immediately", "this month"</li>
+        <li><b>Intent:</b> Questions about delivery, payment, specifications</li>
+        <li><b>Red flags:</b> Price shopping only, no contact info, spam patterns</li>
+      </ul>
     `,
   },
   'lead-sources': {

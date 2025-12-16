@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronRight, X, Menu, Loader2, ArrowLeft } from 'lucide-react';
 import Sidebar from '@/components/dashboard/Sidebar';
 import BillingForm from '@/components/settings/BillingForm';
+import EditAISettings from '@/components/settings/EditAISettings';
 import { useIntegrations } from '@/hooks/useIntegrations';
 import { useAuth } from '@/context/AuthContext';
 
@@ -212,6 +213,12 @@ export default function SettingsPage() {
                             <p className="text-zinc-500 mt-1">Manage integrations and billing</p>
                         </div>
                     </header>
+
+                    {/* AI Agent Settings */}
+                    <section className="mb-8">
+                        <h2 className="text-xl font-semibold text-white mb-6">AI Agent (Riya)</h2>
+                        <EditAISettings />
+                    </section>
 
                     {/* Integrations Section */}
                     <section>

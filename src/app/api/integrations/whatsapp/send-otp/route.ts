@@ -70,23 +70,27 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Failed to store OTP' }, { status: 500 });
         }
 
-        // Send WhatsApp message via Twilio
+        // Send SMS via Twilio (works for everyone without sandbox setup)
         try {
+            // Use Twilio's default SMS number or your purchased number
+            // Note: For SMS, you need a Twilio phone number capable of SMS
+            const fromNumber = process.env.TWILIO_PHONE_NUMBER || process.env.TWILIO_WHATSAPP_NUMBER;
+
             await twilioClient.messages.create({
-                from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
-                to: `whatsapp:${formattedPhone}`,
-                body: `Your LeadFilter verification code is: ${otp}\n\nThis code expires in 5 minutes. Do not share this code with anyone.`,
+                from: fromNumber,
+                to: formattedPhone,
+                body: `Your LeadFilter verification code is: ${otp}\n\nThis code expires in 5 minutes. Do not share this code.`,
             });
         } catch (twilioError: any) {
-            console.error('Twilio error:', twilioError);
+            console.error('Twilio SMS error:', twilioError);
             return NextResponse.json({
-                error: `Failed to send WhatsApp message: ${twilioError.message || 'Unknown error'}`
+                error: `Failed to send SMS: ${twilioError.message || 'Unknown error'}`
             }, { status: 500 });
         }
 
         return NextResponse.json({
             success: true,
-            message: 'OTP sent to your WhatsApp',
+            message: 'OTP sent via SMS',
             phoneNumber: formattedPhone,
         });
 

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Terminal, Zap, Shield, Sparkles } from 'lucide-react';
+import { ArrowRight, Terminal, Zap, Shield, Sparkles, MessageCircle, Bot, TrendingUp } from 'lucide-react';
 
 interface HeroProps {
   setCurrentPage?: () => void;
@@ -25,7 +25,7 @@ export default function Hero({ setCurrentPage }: HeroProps = {}) {
           className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md"
         >
           <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="text-xs font-medium text-zinc-300 tracking-wide">AI-POWERED LEAD QUALIFICATION</span>
+          <span className="text-xs font-medium text-zinc-300 tracking-wide">WHATSAPP + AI FOR INDIAMART SELLERS</span>
         </motion.div>
 
         {/* Headline */}
@@ -33,10 +33,10 @@ export default function Hero({ setCurrentPage }: HeroProps = {}) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-5xl md:text-7xl font-bold tracking-tight mb-8 text-white max-w-4xl"
+          className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-white max-w-5xl"
         >
-          Qualify Leads at <br />
-          <span className="text-gradient">Human Speed.</span>
+          Your AI Sales Agent on <br />
+          <span className="text-gradient">WhatsApp</span>
         </motion.h1>
 
         {/* Subhead */}
@@ -44,10 +44,31 @@ export default function Hero({ setCurrentPage }: HeroProps = {}) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-12 leading-relaxed"
+          className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-8 leading-relaxed"
         >
-          Stop wasting hours on junk leads. Let our AI agent handle WhatsApp qualification while you focus on closing the serious buyers.
+          Stop losing leads to slow responses. Our AI qualifies IndiaMART leads on WhatsApp 24/7, so you only talk to serious buyers.
         </motion.p>
+
+        {/* Stats Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mb-10 text-sm"
+        >
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-green-400" />
+            <span className="text-zinc-300"><span className="text-white font-bold">2x</span> faster lead response</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <MessageCircle className="w-5 h-5 text-green-400" />
+            <span className="text-zinc-300"><span className="text-white font-bold">500+</span> businesses trust us</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Bot className="w-5 h-5 text-cyan-400" />
+            <span className="text-zinc-300"><span className="text-white font-bold">24/7</span> AI availability</span>
+          </div>
+        </motion.div>
 
         {/* CTAs */}
         <motion.div
@@ -57,12 +78,13 @@ export default function Hero({ setCurrentPage }: HeroProps = {}) {
           className="flex flex-col sm:flex-row items-center gap-4 mb-20"
         >
           <Link href="/auth/signup" className="px-8 py-4 bg-white text-black rounded-xl font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
-            Get Started <ArrowRight className="w-4 h-4" />
+            Start Free Trial <ArrowRight className="w-4 h-4" />
           </Link>
           <Link href="/docs" className="px-8 py-4 bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-xl font-medium hover:bg-zinc-800 transition-colors flex items-center gap-2">
-            <Terminal className="w-4 h-4" /> View Documentation
+            <Terminal className="w-4 h-4" /> See How It Works
           </Link>
         </motion.div>
+
 
         {/* IDE Visualization */}
         <motion.div

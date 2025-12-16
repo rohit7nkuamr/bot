@@ -72,10 +72,11 @@ export default function Dashboard() {
                   Dashboard
                 </h1>
                 <p className="text-zinc-500 mt-1 flex items-center gap-2 text-xs md:text-sm">
-                  Welcome back.
+                  AI Riya is qualifying leads 24/7
                   <span className={`px-2 py-0.5 rounded text-[10px] md:text-xs font-medium uppercase tracking-wider ${userPlan === 'enterprise' ? 'bg-indigo-500/20 text-indigo-400' :
-                    userPlan === 'professional' ? 'bg-cyan-500/20 text-cyan-400' :
-                      'bg-zinc-800 text-zinc-400'
+                      userPlan === 'professional' ? 'bg-cyan-500/20 text-cyan-400' :
+                        userPlan === 'starter' ? 'bg-zinc-800 text-zinc-400' :
+                          'bg-green-500/20 text-green-400'
                     }`}>
                     {userPlan} Plan
                   </span>
