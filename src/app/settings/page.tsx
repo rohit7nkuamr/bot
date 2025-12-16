@@ -2,14 +2,16 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronRight, X, Menu, Loader2, ArrowLeft } from 'lucide-react';
+import { Check, ChevronRight, X, Menu, Loader2, ArrowLeft, Lock, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 import Sidebar from '@/components/dashboard/Sidebar';
 import BillingForm from '@/components/settings/BillingForm';
 import EditAISettings from '@/components/settings/EditAISettings';
 import { useIntegrations } from '@/hooks/useIntegrations';
 import { useAuth } from '@/context/AuthContext';
+import { canAccessFeature } from '@/lib/planLimits';
 
-// Static integration config with guides
+// Static integration config with guides and plan requirements
 const integrationConfig = [
     {
         id: 'indiamart' as const,
@@ -26,6 +28,8 @@ const integrationConfig = [
             'Copy the API key and paste it below',
         ],
         helpLink: 'https://seller.indiamart.com',
+        requiredPlan: 'growth',
+        featureKey: 'indiamart' as const,
     },
     {
         id: 'whatsapp' as const,
@@ -42,6 +46,8 @@ const integrationConfig = [
             'You can view all conversations in your dashboard',
         ],
         helpLink: null,
+        requiredPlan: 'growth',
+        featureKey: 'whatsapp' as const,
     },
     {
         id: 'zoho' as const,
@@ -58,6 +64,26 @@ const integrationConfig = [
             'Copy the token and paste it below',
         ],
         helpLink: 'https://accounts.zoho.com/developerconsole',
+        requiredPlan: 'professional',
+        featureKey: 'zohoCrm' as const,
+    },
+    {
+        id: 'hubspot' as const,
+        name: 'HubSpot CRM',
+        description: 'Sync leads with your HubSpot contacts and deals.',
+        color: 'from-orange-500 to-red-500',
+        icon: 'HS',
+        inputLabel: 'HubSpot API Key',
+        inputPlaceholder: 'Enter your HubSpot Private App Token',
+        steps: [
+            'Log in to HubSpot',
+            'Go to Settings → Integrations → Private Apps',
+            'Create a new private app with CRM scopes',
+            'Copy the access token and paste it below',
+        ],
+        helpLink: 'https://app.hubspot.com/',
+        requiredPlan: 'professional',
+        featureKey: 'hubspotCrm' as const,
     }
 ];
 
@@ -79,7 +105,7 @@ export default function SettingsPage() {
     const [otpPhoneNumber, setOtpPhoneNumber] = useState('');
 
     const { integrations, loading, connect, disconnect, refresh } = useIntegrations();
-    const { session } = useAuth();
+    const { session, user } = useAuth();
 
     // Send OTP for WhatsApp
     const handleSendOtp = async () => {
@@ -226,21 +252,44 @@ export default function SettingsPage() {
                             Integrations
                             {loading && <Loader2 className="w-4 h-4 animate-spin text-zinc-500" />}
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {integrationConfig.map((app) => {
                                 const status = getIntegrationStatus(app.id);
                                 const isDisconnecting = disconnectingPlatform === app.id;
+                                const userPlan = user?.subscription_plan || 'starter';
+                                const hasAccess = canAccessFeature(userPlan, app.featureKey);
 
                                 return (
                                     <motion.div
                                         key={app.id}
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className={`glass-card rounded-2xl p-6 border transition-all ${status.connected
-                                            ? 'border-emerald-500/30 bg-emerald-500/5'
-                                            : 'border-white/5 hover:border-white/10'
+                                        className={`glass-card rounded-2xl p-6 border transition-all relative ${!hasAccess
+                                            ? 'border-white/5 opacity-75'
+                                            : status.connected
+                                                ? 'border-emerald-500/30 bg-emerald-500/5'
+                                                : 'border-white/5 hover:border-white/10'
                                             }`}
                                     >
+                                        {/* Locked Overlay */}
+                                        {!hasAccess && (
+                                            <div className="absolute inset-0 bg-zinc-950/60 backdrop-blur-[1px] rounded-2xl z-10 flex items-center justify-center">
+                                                <div className="text-center p-4">
+                                                    <Lock className="w-8 h-8 text-zinc-500 mx-auto mb-2" />
+                                                    <p className="text-sm text-zinc-400 mb-3">
+                                                        Requires <span className="text-white font-medium capitalize">{app.requiredPlan}</span> plan
+                                                    </p>
+                                                    <Link
+                                                        href="/pricing"
+                                                        className="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white text-xs font-medium rounded-lg hover:opacity-90 transition-opacity"
+                                                    >
+                                                        <Sparkles className="w-3 h-3" />
+                                                        Upgrade Now
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        )}
+
                                         <div className="flex items-start gap-4 mb-4">
                                             <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${app.color} flex items-center justify-center text-white font-bold text-sm shadow-lg`}>
                                                 {app.icon}
@@ -252,6 +301,12 @@ export default function SettingsPage() {
                                                         <span className="flex items-center gap-1 text-xs text-emerald-400">
                                                             <Check size={12} />
                                                             Connected
+                                                        </span>
+                                                    )}
+                                                    {!hasAccess && (
+                                                        <span className="flex items-center gap-1 text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">
+                                                            <Lock size={10} />
+                                                            {app.requiredPlan}+
                                                         </span>
                                                     )}
                                                 </div>
@@ -273,13 +328,19 @@ export default function SettingsPage() {
                                                     Disconnect
                                                 </button>
                                             </div>
-                                        ) : (
+                                        ) : hasAccess ? (
                                             <button
                                                 onClick={() => setSelectedIntegration(app)}
                                                 className="w-full mt-2 py-3 rounded-xl bg-white text-black font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
                                             >
                                                 Connect Account <ChevronRight size={16} />
                                             </button>
+                                        ) : (
+                                            <div className="pt-4 border-t border-white/5">
+                                                <p className="text-xs text-zinc-500 text-center">
+                                                    Upgrade to {app.requiredPlan} to connect
+                                                </p>
+                                            </div>
                                         )}
                                     </motion.div>
                                 );

@@ -1,13 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Search, Filter, MoreVertical, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, MoreVertical, Download, ChevronLeft, ChevronRight, Flame, Thermometer, Snowflake } from 'lucide-react';
 
 interface Lead {
     id: string | number;
     name: string;
     phone: string;
     status: string;
+    score?: 'hot' | 'warm' | 'cold';
     budget?: string | number;
     created_at: string;
     business?: string;
@@ -61,7 +62,7 @@ export default function LeadsTable({ leads = [] }: LeadsTableProps) {
                         <tr className="bg-white/5/50 border-b border-white/5">
                             <th className="table-header">Contact Name</th>
                             <th className="table-header">Platform</th>
-                            <th className="table-header">Status</th>
+                            <th className="table-header">Score</th>
                             <th className="table-header">Budget</th>
                             <th className="table-header text-right">Date</th>
                             <th className="table-header w-10"></th>
@@ -86,14 +87,31 @@ export default function LeadsTable({ leads = [] }: LeadsTableProps) {
                                     {lead.platform || lead.business || 'Direct'}
                                 </td>
                                 <td className="table-cell">
-                                    <span className={`px-2 py-1 rounded-md text-xs font-medium border ${(lead.status || 'pending') === 'qualified'
-                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                        : (lead.status || 'pending') === 'pending'
-                                            ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                                            : 'bg-red-500/10 text-red-400 border-red-500/20'
-                                        }`}>
-                                        {(lead.status || 'pending').charAt(0).toUpperCase() + (lead.status || 'pending').slice(1)}
-                                    </span>
+                                    {(() => {
+                                        const score = lead.score || (lead.status === 'qualified' ? 'hot' : lead.status === 'pending' ? 'warm' : 'cold');
+                                        if (score === 'hot') {
+                                            return (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">
+                                                    <Flame className="w-3 h-3" />
+                                                    Hot
+                                                </span>
+                                            );
+                                        } else if (score === 'warm') {
+                                            return (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                                                    <Thermometer className="w-3 h-3" />
+                                                    Warm
+                                                </span>
+                                            );
+                                        } else {
+                                            return (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                                    <Snowflake className="w-3 h-3" />
+                                                    Cold
+                                                </span>
+                                            );
+                                        }
+                                    })()}
                                 </td>
                                 <td className="table-cell font-medium text-white">
                                     {lead.budget ? (typeof lead.budget === 'number' ? `₹${lead.budget}` : lead.budget) : '-'}

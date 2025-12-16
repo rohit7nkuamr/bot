@@ -24,6 +24,7 @@ import Sidebar from './dashboard/Sidebar';
 import StatsGrid from './dashboard/StatsGrid';
 import MetricCharts from './dashboard/MetricCharts';
 import LeadsTable from './dashboard/LeadsTable';
+import UsageMeter from './dashboard/UsageMeter';
 import { useDashboardData } from '@/hooks/useDashboardData';
 
 export default function Dashboard() {
@@ -74,9 +75,9 @@ export default function Dashboard() {
                 <p className="text-zinc-500 mt-1 flex items-center gap-2 text-xs md:text-sm">
                   AI Riya is qualifying leads 24/7
                   <span className={`px-2 py-0.5 rounded text-[10px] md:text-xs font-medium uppercase tracking-wider ${userPlan === 'enterprise' ? 'bg-indigo-500/20 text-indigo-400' :
-                      userPlan === 'professional' ? 'bg-cyan-500/20 text-cyan-400' :
-                        userPlan === 'starter' ? 'bg-zinc-800 text-zinc-400' :
-                          'bg-green-500/20 text-green-400'
+                    userPlan === 'professional' ? 'bg-cyan-500/20 text-cyan-400' :
+                      userPlan === 'starter' ? 'bg-zinc-800 text-zinc-400' :
+                        'bg-green-500/20 text-green-400'
                     }`}>
                     {userPlan} Plan
                   </span>
@@ -127,61 +128,66 @@ export default function Dashboard() {
               <MetricCharts stats={stats} leads={leads} />
             </div>
 
-            {/* Recent Activity / Integration Status */}
-            <div className="glass-card rounded-3xl p-6 border border-white/5 relative overflow-hidden">
-              <h3 className="text-lg font-semibold text-white mb-6">Integrations</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#25D366]/20 flex items-center justify-center">
-                      <MessageCircle className="w-4 h-4 text-[#25D366]" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">WhatsApp API</p>
-                      <p className="text-xs text-zinc-500">Not Connected</p>
-                    </div>
-                  </div>
-                  <Link href="/settings" className="text-xs text-cyan-400 hover:text-cyan-300">Connect</Link>
-                </div>
+            {/* Usage Meter */}
+            <div className="space-y-6">
+              <UsageMeter />
 
-                <div className={`flex items-center justify-between p-4 rounded-xl border border-white/5 ${userPlan === 'starter' ? 'bg-zinc-900/50 opacity-60' : 'bg-white/5'
-                  }`}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
-                      <TrendingUp className="w-4 h-4 text-orange-500" />
+              {/* Integrations */}
+              <div className="glass-card rounded-3xl p-6 border border-white/5 relative overflow-hidden">
+                <h3 className="text-lg font-semibold text-white mb-6">Integrations</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-[#25D366]/20 flex items-center justify-center">
+                        <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white">WhatsApp API</p>
+                        <p className="text-xs text-zinc-500">Not Connected</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Indiamart</p>
-                      <p className="text-xs text-zinc-500">
-                        {userPlan === 'starter' ? 'Professional Plan Only' : 'Not Connected'}
-                      </p>
-                    </div>
-                  </div>
-                  {userPlan === 'starter' ? (
-                    <Lock className="w-4 h-4 text-zinc-600" />
-                  ) : (
                     <Link href="/settings" className="text-xs text-cyan-400 hover:text-cyan-300">Connect</Link>
-                  )}
-                </div>
+                  </div>
 
-                <div className={`flex items-center justify-between p-4 rounded-xl border border-white/5 ${userPlan === 'starter' ? 'bg-zinc-900/50 opacity-60' : 'bg-white/5'
-                  }`}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                      <Users className="w-4 h-4 text-blue-500" />
+                  <div className={`flex items-center justify-between p-4 rounded-xl border border-white/5 ${userPlan === 'starter' ? 'bg-zinc-900/50 opacity-60' : 'bg-white/5'
+                    }`}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                        <TrendingUp className="w-4 h-4 text-orange-500" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white">Indiamart</p>
+                        <p className="text-xs text-zinc-500">
+                          {userPlan === 'starter' ? 'Professional Plan Only' : 'Not Connected'}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Zoho CRM</p>
-                      <p className="text-xs text-zinc-500">
-                        {userPlan === 'starter' ? 'Professional Plan Only' : 'Not Connected'}
-                      </p>
-                    </div>
+                    {userPlan === 'starter' ? (
+                      <Lock className="w-4 h-4 text-zinc-600" />
+                    ) : (
+                      <Link href="/settings" className="text-xs text-cyan-400 hover:text-cyan-300">Connect</Link>
+                    )}
                   </div>
-                  {userPlan === 'starter' ? (
-                    <Lock className="w-4 h-4 text-zinc-600" />
-                  ) : (
-                    <Link href="/settings" className="text-xs text-cyan-400 hover:text-cyan-300">Connect</Link>
-                  )}
+
+                  <div className={`flex items-center justify-between p-4 rounded-xl border border-white/5 ${userPlan === 'starter' ? 'bg-zinc-900/50 opacity-60' : 'bg-white/5'
+                    }`}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                        <Users className="w-4 h-4 text-blue-500" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white">Zoho CRM</p>
+                        <p className="text-xs text-zinc-500">
+                          {userPlan === 'starter' ? 'Professional Plan Only' : 'Not Connected'}
+                        </p>
+                      </div>
+                    </div>
+                    {userPlan === 'starter' ? (
+                      <Lock className="w-4 h-4 text-zinc-600" />
+                    ) : (
+                      <Link href="/settings" className="text-xs text-cyan-400 hover:text-cyan-300">Connect</Link>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
