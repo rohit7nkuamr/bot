@@ -76,6 +76,21 @@ export const PLAN_LIMITS: Record<string, PlanConfig> = {
             customAi: true,
         },
     },
+    enterprise: {
+        name: 'Enterprise',
+        leads: Infinity,
+        aiConversations: Infinity,
+        features: {
+            indiamart: true,
+            whatsapp: true,
+            leadScoring: true,
+            zohoCrm: true,
+            hubspotCrm: true,
+            analytics: true,
+            apiAccess: true,
+            customAi: true,
+        },
+    },
 };
 
 export function getPlanConfig(plan: string): PlanConfig {

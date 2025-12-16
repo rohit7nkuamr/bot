@@ -52,7 +52,7 @@ export default function UsageMeter() {
                         <span className="text-sm text-zinc-300">Leads</span>
                     </div>
                     <span className={`text-sm font-medium ${isLowOnLeads ? 'text-orange-400' : 'text-zinc-400'}`}>
-                        {usage.leadsUsed.toLocaleString()} / {usage.leadsLimit === Infinity ? '∞' : usage.leadsLimit.toLocaleString()}
+                        {(usage.leadsUsed ?? 0).toLocaleString()} / {usage.leadsLimit === Infinity ? '∞' : (usage.leadsLimit ?? 0).toLocaleString()}
                     </span>
                 </div>
                 {usage.leadsLimit !== Infinity && (
@@ -62,8 +62,8 @@ export default function UsageMeter() {
                             animate={{ width: `${leadsPercent}%` }}
                             transition={{ duration: 0.5 }}
                             className={`h-full rounded-full ${leadsPercent >= 100 ? 'bg-red-500' :
-                                    leadsPercent >= 80 ? 'bg-orange-500' :
-                                        'bg-cyan-500'
+                                leadsPercent >= 80 ? 'bg-orange-500' :
+                                    'bg-cyan-500'
                                 }`}
                         />
                     </div>
@@ -83,7 +83,7 @@ export default function UsageMeter() {
                         <span className="text-sm text-zinc-300">AI Conversations</span>
                     </div>
                     <span className={`text-sm font-medium ${isLowOnAI ? 'text-orange-400' : 'text-zinc-400'}`}>
-                        {usage.aiConversationsUsed.toLocaleString()} / {usage.aiConversationsLimit === Infinity ? '∞' : usage.aiConversationsLimit.toLocaleString()}
+                        {(usage.aiConversationsUsed ?? 0).toLocaleString()} / {usage.aiConversationsLimit === Infinity ? '∞' : (usage.aiConversationsLimit ?? 0).toLocaleString()}
                     </span>
                 </div>
                 {usage.aiConversationsLimit !== Infinity && (
@@ -93,8 +93,8 @@ export default function UsageMeter() {
                             animate={{ width: `${aiPercent}%` }}
                             transition={{ duration: 0.5, delay: 0.1 }}
                             className={`h-full rounded-full ${aiPercent >= 100 ? 'bg-red-500' :
-                                    aiPercent >= 80 ? 'bg-orange-500' :
-                                        'bg-purple-500'
+                                aiPercent >= 80 ? 'bg-orange-500' :
+                                    'bg-purple-500'
                                 }`}
                         />
                     </div>
