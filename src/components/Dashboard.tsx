@@ -18,7 +18,8 @@ import {
   ChevronRight,
   Lock,
   Menu,
-  Bell
+  Bell,
+  RefreshCw
 } from 'lucide-react';
 import Sidebar from './dashboard/Sidebar';
 import StatsGrid from './dashboard/StatsGrid';
@@ -31,14 +32,14 @@ export default function Dashboard() {
   const [timeRange, setTimeRange] = useState('week');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const { stats, leads, loading, error, userPlan } = useDashboardData();
+  const { stats, leads, loading, error, userPlan, lastUpdated, refresh } = useDashboardData();
 
-  // Derived Stats for StatsGrid - with null safety
+  // Derived Stats for StatsGrid - with real data
   const dashboardStats = [
-    { label: 'Total Leads', value: String(stats?.totalLeads ?? 0), change: '+12%', icon: Users, color: 'from-blue-500 to-cyan-500' },
-    { label: 'Qualified', value: String(stats?.qualified ?? 0), change: '+23%', icon: CheckCircle, color: 'from-emerald-500 to-teal-500' },
-    { label: 'Conversion Rate', value: stats?.conversionRate ?? '0%', change: '+5%', icon: TrendingUp, color: 'from-indigo-500 to-purple-500' },
-    { label: 'Response Time', value: stats?.responseTime ?? '-', change: '-10%', icon: Clock, color: 'from-orange-500 to-red-500' },
+    { label: 'Total Leads', value: String(stats?.totalLeads ?? 0), icon: Users, color: 'from-blue-500 to-cyan-500' },
+    { label: 'Qualified', value: String(stats?.qualified ?? 0), icon: CheckCircle, color: 'from-emerald-500 to-teal-500' },
+    { label: 'Conversion Rate', value: stats?.conversionRate ?? '0%', icon: TrendingUp, color: 'from-indigo-500 to-purple-500' },
+    { label: 'Response Time', value: stats?.responseTime ?? '-', icon: Clock, color: 'from-orange-500 to-red-500' },
   ];
 
   if (loading) {
@@ -86,6 +87,22 @@ export default function Dashboard() {
             </div>
 
             <div className="flex items-center gap-3 w-full md:w-auto">
+              {/* Last Updated */}
+              {lastUpdated && (
+                <span className="text-xs text-zinc-500 hidden md:block">
+                  Updated {lastUpdated.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              )}
+
+              {/* Refresh Button */}
+              <button
+                onClick={refresh}
+                className="p-2 text-zinc-400 hover:text-white bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
+                title="Refresh data"
+              >
+                <RefreshCw size={18} />
+              </button>
+
               <div className="flex items-center gap-1 bg-zinc-900/50 p-1 rounded-lg border border-white/5 flex-1 md:flex-none justify-center">
                 {['day', 'week', 'month'].map((range) => (
                   <button

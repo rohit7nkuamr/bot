@@ -6,7 +6,7 @@ import { LucideIcon } from 'lucide-react';
 interface StatItem {
     label: string;
     value: string;
-    change: string;
+    change?: string;
     icon: LucideIcon;
     color: string; // Expecting gradient classes like 'from-blue-500 to-cyan-500'
 }
@@ -57,9 +57,11 @@ export default function StatsGrid({ stats = [] }: StatsGridProps) {
                                     <Icon className="w-5 h-5 text-white" />
                                 </div>
                             </div>
-                            <span className={`text-xs font-medium px-2 py-1 rounded-full bg-white/5 text-zinc-400 border border-white/5`}>
-                                {stat.change}
-                            </span>
+                            {stat.change && (
+                                <span className={`text-xs font-medium px-2 py-1 rounded-full bg-white/5 text-zinc-400 border border-white/5`}>
+                                    {stat.change}
+                                </span>
+                            )}
                         </div>
 
                         <div className="relative z-10">

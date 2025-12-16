@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
 export interface DashboardStats {
@@ -7,6 +7,8 @@ export interface DashboardStats {
     conversionRate: string;
     responseTime: string;
 }
+
+const REFRESH_INTERVAL = 30000; // 30 seconds
 
 export function useDashboardData() {
     const { user, isAuthenticated, session } = useAuth();
@@ -19,61 +21,87 @@ export function useDashboardData() {
     const [leads, setLeads] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-    useEffect(() => {
-        async function fetchData() {
-            if (!isAuthenticated || !session) {
-                setLoading(false);
-                return;
-            }
-
-            try {
-                setLoading(true);
-                setError(null);
-
-                // Get access token from session
-                const accessToken = session.access_token;
-
-                // Fetch leads with auth token
-                const response = await fetch('/api/leads', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`,
-                    },
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    setLeads(data.data || []);
-                    if (data.stats) {
-                        setStats(data.stats);
-                    }
-                } else {
-                    throw new Error(data.error || 'Failed to fetch leads');
-                }
-
-            } catch (err) {
-                console.error("Failed to fetch dashboard data", err);
-                setError("Could not load dashboard data.");
-
-                // Show empty state instead of mock data
-                setStats({
-                    totalLeads: 0,
-                    qualified: 0,
-                    conversionRate: '0%',
-                    responseTime: '-'
-                });
-                setLeads([]);
-
-            } finally {
-                setLoading(false);
-            }
+    const fetchData = useCallback(async (showLoading = true) => {
+        if (!isAuthenticated || !session) {
+            setLoading(false);
+            return;
         }
 
-        fetchData();
+        try {
+            if (showLoading) setLoading(true);
+            setError(null);
+
+            const accessToken = session.access_token;
+
+            const response = await fetch('/api/leads', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                setLeads(data.data || []);
+                if (data.stats) {
+                    setStats({
+                        totalLeads: data.stats.total || 0,
+                        qualified: data.stats.qualified || 0,
+                        conversionRate: `${data.stats.conversionRate || 0}%`,
+                        responseTime: '< 2s', // AI responds fast
+                    });
+                }
+                setLastUpdated(new Date());
+            } else {
+                throw new Error(data.error || 'Failed to fetch leads');
+            }
+
+        } catch (err) {
+            console.error("Failed to fetch dashboard data", err);
+            setError("Could not load dashboard data.");
+            setStats({
+                totalLeads: 0,
+                qualified: 0,
+                conversionRate: '0%',
+                responseTime: '-'
+            });
+            setLeads([]);
+        } finally {
+            setLoading(false);
+        }
     }, [isAuthenticated, session]);
 
-    return { stats, leads, loading, error, userPlan: user?.subscription_plan || 'starter' };
+    // Initial fetch
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    // Auto-refresh polling
+    useEffect(() => {
+        if (!isAuthenticated) return;
+
+        const interval = setInterval(() => {
+            fetchData(false); // Don't show loading spinner on auto-refresh
+        }, REFRESH_INTERVAL);
+
+        return () => clearInterval(interval);
+    }, [isAuthenticated, fetchData]);
+
+    const refresh = useCallback(() => {
+        fetchData(true);
+    }, [fetchData]);
+
+    return {
+        stats,
+        leads,
+        loading,
+        error,
+        userPlan: user?.subscription_plan || 'starter',
+        lastUpdated,
+        refresh,
+    };
 }

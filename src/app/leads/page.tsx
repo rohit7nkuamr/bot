@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, Download, ArrowLeft, Phone, Mail, Calendar, DollarSign, MoreVertical, Menu } from 'lucide-react';
+import { Search, Filter, Download, ArrowLeft, Phone, Mail, Calendar, DollarSign, MoreVertical, Menu, Flame, Thermometer, Snowflake, MessageCircle } from 'lucide-react';
 import Sidebar from '@/components/dashboard/Sidebar';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { useRouter } from 'next/navigation';
@@ -13,7 +13,7 @@ export default function LeadsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
 
-    const { leads, loading, error } = useDashboardData();
+    const { leads, loading, error, lastUpdated, refresh } = useDashboardData();
 
     // Filter leads
     const filteredLeads = leads.filter(lead => {
@@ -23,16 +23,29 @@ export default function LeadsPage() {
         return matchesSearch && matchesStatus;
     });
 
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'qualified':
-                return <span className="px-2 py-1 text-xs rounded-full bg-emerald-500/20 text-emerald-400">Qualified</span>;
-            case 'pending':
-                return <span className="px-2 py-1 text-xs rounded-full bg-amber-500/20 text-amber-400">Pending</span>;
-            case 'rejected':
-                return <span className="px-2 py-1 text-xs rounded-full bg-red-500/20 text-red-400">Rejected</span>;
-            default:
-                return <span className="px-2 py-1 text-xs rounded-full bg-zinc-500/20 text-zinc-400">{status}</span>;
+    const getScoreBadge = (lead: any) => {
+        const score = lead.score || (lead.status === 'qualified' ? 'hot' : lead.status === 'pending' ? 'warm' : 'cold');
+        if (score === 'hot') {
+            return (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">
+                    <Flame className="w-3 h-3" />
+                    Hot
+                </span>
+            );
+        } else if (score === 'warm') {
+            return (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                    <Thermometer className="w-3 h-3" />
+                    Warm
+                </span>
+            );
+        } else {
+            return (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    <Snowflake className="w-3 h-3" />
+                    Cold
+                </span>
+            );
         }
     };
 
@@ -62,7 +75,14 @@ export default function LeadsPage() {
                             </button>
                             <div>
                                 <h1 className="text-2xl md:text-3xl font-bold text-white">All Leads</h1>
-                                <p className="text-zinc-500 mt-1">{filteredLeads.length} total leads</p>
+                                <p className="text-zinc-500 mt-1">
+                                    {filteredLeads.length} total leads
+                                    {lastUpdated && (
+                                        <span className="ml-2 text-xs">
+                                            • Updated {lastUpdated.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                    )}
+                                </p>
                             </div>
                         </div>
 
@@ -83,9 +103,9 @@ export default function LeadsPage() {
                                 className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none"
                             >
                                 <option value="all">All Status</option>
-                                <option value="qualified">Qualified</option>
-                                <option value="pending">Pending</option>
-                                <option value="rejected">Rejected</option>
+                                <option value="qualified">Hot (Qualified)</option>
+                                <option value="pending">Warm (Pending)</option>
+                                <option value="rejected">Cold (Rejected)</option>
                             </select>
                         </div>
                     </header>
@@ -141,17 +161,34 @@ export default function LeadsPage() {
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-2">
                                             {lead.budget && (
-                                                <span className="text-sm text-zinc-400 flex items-center gap-1">
+                                                <span className="text-sm text-zinc-400 flex items-center gap-1 mr-2">
                                                     <DollarSign size={14} />
                                                     ₹{lead.budget.toLocaleString()}
                                                 </span>
                                             )}
-                                            {getStatusBadge(lead.status)}
-                                            <button className="p-1 text-zinc-500 hover:text-white">
-                                                <MoreVertical size={16} />
-                                            </button>
+                                            {getScoreBadge(lead)}
+
+                                            {/* Quick Actions */}
+                                            <div className="flex items-center gap-1 ml-2">
+                                                <a
+                                                    href={`tel:${lead.phone}`}
+                                                    className="p-2 text-zinc-400 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"
+                                                    title="Call"
+                                                >
+                                                    <Phone size={16} />
+                                                </a>
+                                                <a
+                                                    href={`https://wa.me/${lead.phone?.replace(/\D/g, '')}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="p-2 text-zinc-400 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"
+                                                    title="WhatsApp"
+                                                >
+                                                    <MessageCircle size={16} />
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -163,3 +200,4 @@ export default function LeadsPage() {
         </div>
     );
 }
+
